@@ -1,0 +1,194 @@
+---
+import { ArrowUpRight, ArrowLeft } from '@lucide/astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CtaBand from '../../components/ui/CtaBand.astro';
+import Mockup from '../../components/mockups/Mockup.astro';
+import { projects, type Project } from '../../content/projects';
+
+export function getStaticPaths() {
+  return projects.map((project, i) => ({
+    params: { slug: project.slug },
+    props: { project, next: projects[(i + 1) % projects.length] },
+  }));
+}
+interface Props { project: Project; next: Project }
+const { project: p, next } = Astro.props;
+const isConcept = p.kind === 'concept';
+const tone = { navy: 'bg-navy', ice: 'bg-ice', paper: 'bg-paper ring-1 ring-inset ring-silver' };
+const site = Astro.site ?? new URL('http://localhost:4321');
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: site.href },
+      { '@type': 'ListItem', position: 2, name: 'Portfolio', item: new URL('/portfolio/', site).href },
+      { '@type': 'ListItem', position: 3, name: p.title, item: new URL(`/portfolio/${p.slug}/`, site).href },
+    ],
+  },
+];
+---
+<BaseLayout
+  title={`${p.title} — ${isConcept ? 'Concept' : 'Case study'}`}
+  description={`${isConcept ? 'Concept demonstration: ' : ''}${p.summary}`}
+  jsonLd={jsonLd}
+  ogType="article"
+>
+  <article>
+    <header class="pt-[4.5rem]">
+      <div class="shell pb-10 pt-10 md:pb-14 md:pt-16">
+        <nav aria-label="Breadcrumb">
+          <ol class="eyebrow flex flex-wrap items-center gap-x-3 gap-y-1 text-ink-soft">
+            <li class="flex items-center gap-3"><a href="/" class="inline-flex min-h-8 items-center hover:text-navy">Home</a><span aria-hidden="true">/</span></li>
+            <li class="flex items-center gap-3"><a href="/portfolio/" class="inline-flex min-h-8 items-center hover:text-navy">Portfolio</a><span aria-hidden="true">/</span></li>
+            <li aria-current="page" class="text-navy">{p.title}</li>
+          </ol>
+        </nav>
+        <div class="mt-8 flex flex-wrap items-center gap-2">
+          <span class="eyebrow rounded-full bg-lime px-3 py-1.5 text-ink">{isConcept ? 'Concept demonstration' : 'Client work'}</span>
+          <a href={`/portfolio/?category=${p.category}`} class="eyebrow inline-flex min-h-8 items-center rounded-full border border-navy/20 px-3 text-navy hover:bg-navy hover:text-pearl">{p.categoryLabel}</a>
+        </div>
+        <div class="mt-6 grid gap-8 lg:grid-cols-12 lg:items-end">
+          <h1 class="t-d1 text-navy lg:col-span-8">{p.title}</h1>
+          <p class="t-lead text-ink-soft lg:col-span-4 lg:pb-2">{p.summary}</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="shell">
+      <figure class:list={['rounded-[var(--radius-panel)] p-4 sm:p-10 lg:p-20', tone[p.tone]]}>
+        <Mockup kind={p.screens[0].kind} label={`${p.title} — ${p.screens[0].caption}`} class="mx-auto max-w-5xl shadow-[0_50px_100px_-50px_rgba(16,24,39,0.6)]" />
+        <figcaption class:list={['eyebrow mt-5 text-center', p.tone === 'navy' ? 'text-navy-mist' : 'text-ink-soft']}>{p.screens[0].caption} · sample data</figcaption>
+      </figure>
+
+      <dl class="mt-10 grid border-y border-silver sm:grid-cols-2 lg:grid-cols-4">
+        {[
+          ['Type', isConcept ? 'Concept demonstration' : 'Client project'],
+          ['Division', p.categoryLabel],
+          ['Discipline', p.discipline],
+          ['Client', isConcept ? 'None — self-initiated' : '—'],
+        ].map(([k, v], i) => (
+          <div class:list={['py-6 sm:px-6', i === 0 && 'sm:pl-0', i > 0 && 'border-t border-silver sm:border-t-0 lg:border-l', i === 1 && 'sm:border-l', i === 2 && 'sm:border-t sm:pl-0 lg:border-t-0 lg:pl-6', i === 3 && 'sm:border-l sm:border-t lg:border-t-0']}>
+            <dt class="eyebrow text-ink-soft">{k}</dt>
+            <dd class="mt-2 font-medium text-navy">{v}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+
+    <section class="section" aria-labelledby="brief-title">
+      <div class="shell grid gap-10 lg:grid-cols-12 lg:gap-8">
+        <h2 id="brief-title" class="eyebrow text-navy lg:col-span-3 lg:pt-3">The brief</h2>
+        <div class="lg:col-span-9">
+          <p class="t-d3 text-navy" data-reveal>{p.brief}</p>
+          <div class="mt-12 grid gap-10 md:grid-cols-2 md:gap-12">
+            <div data-reveal>
+              <h3 class="eyebrow border-b border-silver pb-4 text-ink-soft">Objectives</h3>
+              <ol>
+                {p.objectives.map((o, i) => (
+                  <li class="flex gap-4 border-b border-silver py-4 text-ink">
+                    <span class="eyebrow pt-1 text-ink-soft">0{i + 1}</span>{o}
+                  </li>
+                ))}
+              </ol>
+            </div>
+            <div data-reveal style="--reveal-i:1">
+              <h3 class="eyebrow border-b border-silver pb-4 text-ink-soft">Technology stack</h3>
+              <ul class="mt-5 flex flex-wrap gap-2">
+                {p.stack.map((t) => <li class="rounded-full bg-paper px-3.5 py-1.5 text-sm text-navy ring-1 ring-inset ring-silver">{t}</li>)}
+              </ul>
+              <h3 class="eyebrow mt-10 border-b border-silver pb-4 text-ink-soft">Key features</h3>
+              <ul>
+                {p.features.map((f) => (
+                  <li class="flex items-center gap-3 border-b border-silver py-3 text-ink">
+                    <span class="h-1.5 w-1.5 flex-none rounded-[1px] bg-navy" aria-hidden="true"></span>{f}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="on-dark section bg-navy text-pearl" aria-labelledby="approach-title">
+      <div class="shell">
+        <div class="grid gap-6 lg:grid-cols-12 lg:gap-8">
+          <p class="eyebrow text-lime lg:col-span-3 lg:pt-3">Implementation approach</p>
+          <h2 id="approach-title" class="t-d2 lg:col-span-9">How we approached it.</h2>
+        </div>
+        <ol class="mt-12 grid border-t border-navy-line md:mt-16 md:grid-cols-3">
+          {p.approach.map((a, i) => (
+            <li class:list={['border-b border-navy-line py-8 md:border-b-0 md:py-10', i > 0 && 'md:border-l md:pl-8', i < 2 && 'md:pr-8']} data-reveal style={`--reveal-i:${i}`}>
+              <p class="eyebrow text-lime">0{i + 1}</p>
+              <h3 class="mt-5 font-display text-[1.625rem] font-semibold leading-tight tracking-[-0.025em]">{a.title}</h3>
+              <p class="mt-3 leading-relaxed text-navy-mist">{a.text}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    {p.screens.length > 1 && (
+      <section class="section" aria-labelledby="screens-title">
+        <div class="shell">
+          <div class="grid gap-6 lg:grid-cols-12 lg:gap-8">
+            <p class="eyebrow text-navy lg:col-span-3 lg:pt-3">Screens</p>
+            <h2 id="screens-title" class="t-d2 text-navy lg:col-span-9">Interface studies.</h2>
+          </div>
+          <div class="mt-12 grid gap-6 md:mt-16 lg:grid-cols-2">
+            {p.screens.map((s, i) => (
+              <figure class:list={['rounded-[var(--radius-panel)] p-4 sm:p-8', i % 2 === 0 ? 'bg-ice' : 'bg-paper ring-1 ring-inset ring-silver']} data-reveal style={`--reveal-i:${i}`}>
+                <Mockup kind={s.kind} label={`${p.title} — ${s.caption}`} class="shadow-[0_30px_60px_-30px_rgba(16,24,39,0.45)]" />
+                <figcaption class="mt-5 flex items-baseline gap-4 text-sm text-ink-soft">
+                  <span class="eyebrow text-navy">0{i + 1}</span>{s.caption}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+          <p class="mt-6 text-sm text-ink-soft">Screens are coded interface studies using illustrative sample data.</p>
+        </div>
+      </section>
+    )}
+
+    <section class="section-tight !pt-0" aria-labelledby="outcomes-title">
+      <div class="shell">
+        <div class="grid gap-6 rounded-[var(--radius-panel)] border border-navy/15 bg-ice-soft p-6 sm:p-10 lg:grid-cols-12 lg:gap-8 lg:p-14">
+          <h2 id="outcomes-title" class="eyebrow text-navy lg:col-span-3 lg:pt-2">Outcomes</h2>
+          <div class="lg:col-span-9">
+            {p.outcomes?.length ? (
+              <ul class="grid gap-4">
+                {p.outcomes.map((o) => <li class="t-d3 text-navy">{o}</li>)}
+              </ul>
+            ) : (
+              <>
+                <p class="t-d3 text-navy">This is a concept demonstration, so there are no client results to report.</p>
+                <p class="mt-5 max-w-2xl text-ink-soft">
+                  We only publish outcomes that have been measured on real projects and approved by the client. This study demonstrates our approach, interface design and technical decisions for this type of problem.
+                </p>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="shell pb-4" aria-label="More projects">
+      <div class="grid border-y border-navy/15 md:grid-cols-2">
+        <a href="/portfolio/" class="group flex min-h-24 items-center gap-4 py-6 font-medium text-navy md:pr-8">
+          <span class="grid h-12 w-12 flex-none place-items-center rounded-full border border-navy/20 transition-colors group-hover:bg-navy group-hover:text-pearl"><ArrowLeft class="h-4 w-4" aria-hidden="true" /></span>
+          All work
+        </a>
+        <a href={`/portfolio/${next.slug}/`} class="group flex min-h-24 items-center justify-between gap-4 border-t border-navy/15 py-6 md:border-l md:border-t-0 md:pl-8">
+          <span>
+            <span class="eyebrow text-ink-soft">Next project</span>
+            <span class="mt-1.5 block font-display text-[1.5rem] font-semibold leading-tight tracking-[-0.025em] text-navy md:text-[1.875rem]">{next.title}</span>
+          </span>
+          <span class="grid h-12 w-12 flex-none place-items-center rounded-full border border-navy/20 text-navy transition-colors group-hover:bg-navy group-hover:text-pearl"><ArrowUpRight class="h-4 w-4" aria-hidden="true" /></span>
+        </a>
+      </div>
+    </nav>
+  </article>
+
+  <CtaBand title="Have a similar challenge?" text="Tell us about it and we will outline how we would approach your version of this problem." />
+</BaseLayout>

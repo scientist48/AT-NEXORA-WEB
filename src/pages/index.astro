@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/sections/Hero.astro';
+import Intro from '../components/sections/Intro.astro';
+import Divisions from '../components/sections/Divisions.astro';
+import Ecosystem from '../components/sections/Ecosystem.astro';
+import SelectedWork from '../components/sections/SelectedWork.astro';
+import Approach from '../components/sections/Approach.astro';
+import WhyUs from '../components/sections/WhyUs.astro';
+import CtaBand from '../components/ui/CtaBand.astro';
+
+const site = Astro.site ?? new URL('http://localhost:4321');
+const webSite = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'AT NEXORA Technologies',
+  url: site.href,
+};
+---
+<BaseLayout
+  title="AT NEXORA Technologies — Digital Engineering, Data Intelligence & AI Automation"
+  description="AT NEXORA Technologies engineers intelligent digital products, data-driven systems and AI-powered solutions: custom software, Power BI and business intelligence, AI agents and automation."
+  jsonLd={[webSite]}
+>
+  <link slot="head" rel="preload" as="image" href="/posters/hero.webp" fetchpriority="high" />
+  <Hero />
+  <Intro />
+  <Divisions />
+  <Ecosystem />
+  <SelectedWork />
+  <Approach />
+  <WhyUs />
+  <CtaBand />
+</BaseLayout>

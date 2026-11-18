@@ -1,0 +1,87 @@
+---
+import { ArrowUpRight, ArrowDown } from '@lucide/astro';
+import HeroSculpture from '../three/HeroSculpture.tsx';
+import { services } from '../../content/services';
+---
+<section class="hero relative overflow-clip pt-[4.5rem]" aria-labelledby="hero-title">
+  <div class="shell relative">
+    <div class="grid items-center gap-x-8 lg:min-h-[calc(100svh-4.5rem-7.5rem)] lg:grid-cols-12">
+      <div class="relative z-10 pb-4 pt-10 sm:pt-14 lg:col-span-7 lg:py-16">
+        <p class="eyebrow flex items-center gap-3 text-navy">
+          <span class="h-2 w-2 rounded-[2px] bg-lime ring-1 ring-navy/30" aria-hidden="true"></span>
+          Engineering. Intelligence. Innovation.
+        </p>
+        <h1 id="hero-title" class="t-hero mt-6 uppercase text-navy lg:mt-8">
+          Engineering<br />what’s <span class="mark">next.</span>
+        </h1>
+        <p class="t-lead mt-7 max-w-[34rem] text-ink-soft lg:mt-9">
+          We engineer intelligent digital products, data-driven systems and AI-powered solutions that help businesses move forward.
+        </p>
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row lg:mt-10">
+          <a href="#capabilities" class="btn btn-primary">
+            Explore Our Capabilities
+            <ArrowDown aria-hidden="true" class="!translate-x-0 !translate-y-0" />
+          </a>
+          <a href="/contact/" class="btn btn-ghost">
+            Start a Project
+            <ArrowUpRight aria-hidden="true" />
+          </a>
+        </div>
+      </div>
+
+      <div class="relative lg:col-span-5 lg:-ml-24 xl:-ml-32">
+        <div class="sculpture relative mx-auto aspect-square w-full max-w-[24rem] sm:max-w-[30rem] lg:max-w-none" data-sculpture>
+          <div class="sculpture-halo" aria-hidden="true"></div>
+          <img
+            src="/posters/hero.webp"
+            alt="An engineered sculpture of three interlocked frames — navy metal, ice-blue glass and pale alloy with a lime signal line — representing digital engineering, data intelligence and AI."
+            width="1200"
+            height="1200"
+            fetchpriority="high"
+            decoding="async"
+            class="sculpture-poster absolute inset-0 h-full w-full object-contain"
+          />
+          <div class="sculpture-live absolute inset-0">
+            <HeroSculpture client:idle />
+          </div>
+        </div>
+        <p class="eyebrow pointer-events-none absolute bottom-2 right-0 hidden text-ink-soft xl:block">Fig. 01 — The Nexora Link</p>
+      </div>
+    </div>
+
+    <nav aria-label="Service divisions" class="relative z-10 mt-6 border-t border-navy/15 lg:mt-0">
+      <ul class="grid md:grid-cols-3">
+        {services.map((s, i) => (
+          <li class="border-b border-navy/15 md:border-b-0 md:border-l md:pl-6 md:first:border-l-0 md:first:pl-0">
+            <a
+              href={`/services/${s.slug}/`}
+              data-discipline={i}
+              class="group flex min-h-[4.5rem] items-center justify-between gap-4 py-4 md:min-h-[7.5rem] md:py-6 md:pr-6"
+            >
+              <span>
+                <span class="eyebrow text-ink-soft">{s.index}</span>
+                <span class="mt-1 block font-display text-[1.375rem] font-semibold leading-tight tracking-[-0.025em] text-navy lg:text-[1.625rem]">{s.name}</span>
+              </span>
+              <span class="grid h-10 w-10 flex-none place-items-center rounded-full border border-navy/20 text-navy transition-colors duration-300 group-hover:bg-navy group-hover:text-pearl group-focus-visible:bg-navy group-focus-visible:text-pearl">
+                <ArrowUpRight class="h-4 w-4" aria-hidden="true" />
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</section>
+
+<style>
+  .sculpture-halo {
+    position: absolute;
+    inset: 6%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, var(--color-ice) 0%, color-mix(in srgb, var(--color-ice) 55%, transparent) 45%, transparent 100%);
+  }
+  .sculpture-live { opacity: 0; transition: opacity 0.9s ease; }
+  .sculpture-poster { transition: opacity 0.9s ease 0.2s; }
+  .sculpture[data-live='true'] .sculpture-live { opacity: 1; }
+  .sculpture[data-live='true'] .sculpture-poster { opacity: 0; }
+</style>

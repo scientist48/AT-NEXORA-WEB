@@ -1,0 +1,15 @@
+---
+interface Props { class?: string; tone?: 'dark' | 'light' }
+const { class: cls = '', tone = 'dark' } = Astro.props;
+const stroke = tone === 'dark' ? 'var(--color-navy)' : 'var(--color-pearl)';
+---
+<span class:list={['inline-flex items-center gap-2.5', cls]}>
+  <svg width="30" height="30" viewBox="0 0 30 30" fill="none" aria-hidden="true" class="flex-none">
+    <rect x="2" y="9" width="26" height="12" rx="2.5" stroke={stroke} stroke-width="2.4" />
+    <rect x="9" y="2" width="12" height="26" rx="2.5" stroke={stroke} stroke-width="2.4" />
+    <rect x="12" y="12" width="6" height="6" rx="1" fill="var(--color-lime)" />
+  </svg>
+  <span class="font-display text-[1.1875rem] font-bold leading-none tracking-[-0.03em]">
+    AT NEXORA
+  </span>
+</span>

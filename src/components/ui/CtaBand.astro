@@ -1,0 +1,42 @@
+---
+import { ArrowUpRight } from '@lucide/astro';
+import { company } from '../../content/site';
+interface Props {
+  title?: string;
+  text?: string;
+}
+const {
+  title = 'Have a system to build, a question to answer, or a process to automate?',
+  text = 'Tell us what you are working on. We will reply with clear next steps, not a sales script.',
+} = Astro.props;
+---
+<section class="section-tight" aria-labelledby="cta-title">
+  <div class="shell">
+    <div class="relative overflow-hidden rounded-[var(--radius-panel)] bg-ice px-6 py-12 sm:px-10 md:px-16 md:py-20" data-reveal>
+      <svg aria-hidden="true" viewBox="0 0 300 300" fill="none" class="pointer-events-none absolute -right-16 -top-16 hidden h-[26rem] w-[26rem] text-navy/10 md:block">
+        <rect x="20" y="90" width="260" height="120" rx="20" stroke="currentColor" stroke-width="14" />
+        <rect x="90" y="20" width="120" height="260" rx="20" stroke="currentColor" stroke-width="14" />
+      </svg>
+      <p class="eyebrow text-navy">Start a project</p>
+      <h2 id="cta-title" class="t-d1 mt-6 max-w-[20ch] text-navy">{title}</h2>
+      <p class="t-lead mt-6 max-w-xl text-ink-soft">{text}</p>
+      <div class="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        <a href="/contact/" class="btn btn-primary">Start a Project <ArrowUpRight aria-hidden="true" /></a>
+        <a href={company.whatsappHref} target="_blank" rel="noopener noreferrer" class="btn btn-ghost">
+          Chat on WhatsApp <ArrowUpRight aria-hidden="true" />
+          <span class="sr-only">(opens in a new tab)</span>
+        </a>
+      </div>
+      <dl class="mt-12 grid gap-6 border-t border-navy/15 pt-8 sm:grid-cols-2 lg:max-w-2xl">
+        <div>
+          <dt class="eyebrow text-ink-soft">Email</dt>
+          <dd class="mt-2"><a href={company.emailHref} class="link break-all text-lg font-medium text-navy">{company.email}</a></dd>
+        </div>
+        <div>
+          <dt class="eyebrow text-ink-soft">Phone</dt>
+          <dd class="mt-2"><a href={company.phoneHref} class="link text-lg font-medium text-navy">{company.phoneDisplay}</a></dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,64 @@
+---
+import { ArrowUpRight } from '@lucide/astro';
+import Mockup from '../mockups/Mockup.astro';
+import SectionHead from '../ui/SectionHead.astro';
+import { services } from '../../content/services';
+
+const themes = {
+  navy: { panel: 'on-dark bg-navy text-pearl', sub: 'text-navy-mist', line: 'border-navy-line', eyebrow: 'text-lime', btn: 'btn-lime', title: 'text-pearl' },
+  ice: { panel: 'bg-ice text-ink', sub: 'text-ink-soft', line: 'border-navy/15', eyebrow: 'text-navy', btn: 'btn-primary', title: 'text-navy' },
+  paper: { panel: 'bg-paper text-ink ring-1 ring-inset ring-silver', sub: 'text-ink-soft', line: 'border-silver', eyebrow: 'text-navy', btn: 'btn-primary', title: 'text-navy' },
+} as const;
+---
+<section id="capabilities" class="section" aria-labelledby="capabilities-title">
+  <div class="shell">
+    <SectionHead
+      eyebrow="Capabilities"
+      title="Three divisions.<br />One engineering practice."
+      intro="Each division is a specialism in its own right. Together they cover everything from the first interface to the last automated decision."
+    />
+    <span id="capabilities-title" class="sr-only">Our capabilities</span>
+
+    <div class="mt-12 grid gap-5 md:mt-20 md:gap-6">
+      {services.map((s, i) => {
+        const t = themes[s.theme];
+        return (
+          <article class:list={['overflow-hidden rounded-[var(--radius-panel)]', t.panel]} data-reveal>
+            <div class="grid lg:grid-cols-12">
+              <div class:list={['p-6 sm:p-10 lg:col-span-6 lg:p-14', i % 2 === 1 && 'lg:order-2']}>
+                <p class:list={['eyebrow', t.eyebrow]}>{s.index} — {s.name}</p>
+                <h3 class:list={['t-d3 mt-6 max-w-[18ch] !leading-[1.05]', t.title]} style="font-size:clamp(1.75rem,1.2rem+2vw,3rem)">{s.headline}</h3>
+                <p class:list={['mt-5 max-w-lg text-[1.0625rem] leading-relaxed', t.sub]}>{s.summary}</p>
+
+                <div class:list={['mt-8 border-t pt-6', t.line]}>
+                  <h4 class:list={['eyebrow', t.sub]}>Business value</h4>
+                  <p class="mt-3 max-w-lg font-medium leading-relaxed">{s.value}</p>
+                </div>
+
+                <ul class:list={['mt-8 grid border-t sm:grid-cols-2 sm:gap-x-8', t.line]} aria-label={`${s.name} capabilities`}>
+                  {s.highlights.map((h) => (
+                    <li class:list={['flex items-center gap-3 border-b py-3 text-[0.9375rem]', t.line]}>
+                      <span class="h-1.5 w-1.5 flex-none rounded-[1px] bg-lime ring-1 ring-current/30" aria-hidden="true"></span>
+                      {h}
+                    </li>
+                  ))}
+                </ul>
+
+                <a href={`/services/${s.slug}/`} class:list={['btn mt-10', t.btn]}>
+                  Explore {s.name}
+                  <ArrowUpRight aria-hidden="true" />
+                </a>
+              </div>
+              <div class:list={['flex items-center p-6 pt-0 sm:p-10 sm:pt-0 lg:col-span-6 lg:p-14', i % 2 === 1 ? 'lg:order-1 lg:pr-0' : 'lg:pl-0']}>
+                <div class="w-full">
+                  <Mockup kind={s.mockup} label={`Illustrative ${s.name} interface`} class="shadow-[0_40px_80px_-40px_rgba(16,24,39,0.55)]" />
+                  <p class:list={['eyebrow mt-4', t.sub]}>Illustrative interface · sample data</p>
+                </div>
+              </div>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  </div>
+</section>

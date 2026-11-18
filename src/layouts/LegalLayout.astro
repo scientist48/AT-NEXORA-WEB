@@ -1,0 +1,17 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import PageHero from '../components/ui/PageHero.astro';
+interface Props { title: string; description: string; updated: string; heading: string }
+const { title, description, updated, heading } = Astro.props;
+---
+<BaseLayout title={title} description={description}>
+  <PageHero eyebrow={title} crumbs={[{ label: 'Home', href: '/' }]} title={heading} />
+  <section class="pb-16 md:pb-28">
+    <div class="shell grid gap-10 border-t border-silver pt-10 lg:grid-cols-12 lg:gap-8 lg:pt-14">
+      <p class="eyebrow text-ink-soft lg:col-span-3">Last updated<br /><span class="text-navy">{updated}</span></p>
+      <div class="prose-nx lg:col-span-9">
+        <slot />
+      </div>
+    </div>
+  </section>
+</BaseLayout>

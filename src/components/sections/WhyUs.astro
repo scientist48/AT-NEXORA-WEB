@@ -1,0 +1,25 @@
+---
+import { principles } from '../../content/site';
+---
+<section class="section" aria-labelledby="why-title">
+  <div class="shell grid gap-12 lg:grid-cols-12 lg:gap-8">
+    <div class="lg:col-span-4" data-reveal>
+      <div class="lg:sticky lg:top-28">
+        <p class="eyebrow text-navy">Why AT NEXORA</p>
+        <h2 id="why-title" class="t-d2 mt-6 text-navy">How we work matters as much as what we build.</h2>
+        <p class="mt-6 max-w-sm text-[1.0625rem] leading-relaxed text-ink-soft">
+          Six commitments that shape every project, whatever its size.
+        </p>
+      </div>
+    </div>
+    <ul class="grid border-t border-silver sm:grid-cols-2 lg:col-span-8 lg:col-start-5">
+      {principles.map((p, i) => (
+        <li class:list={['border-b border-silver py-8 sm:py-10', i % 2 === 0 ? 'sm:pr-10' : 'sm:border-l sm:pl-10']} data-reveal style={`--reveal-i:${i % 2}`}>
+          <p class="eyebrow text-ink-soft">0{i + 1}</p>
+          <h3 class="mt-5 font-display text-[1.5rem] font-semibold leading-tight tracking-[-0.025em] text-navy">{p.title}</h3>
+          <p class="mt-3 leading-relaxed text-ink-soft">{p.text}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

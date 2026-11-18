@@ -1,0 +1,534 @@
+---
+/**
+ * Original, coded interface studies used as portfolio and service imagery.
+ * Pure inline SVG: resolution-independent, tiny, and tied to the design tokens.
+ * All figures shown are illustrative sample data.
+ */
+import type { MockupKind } from '../../content/projects';
+
+interface Props {
+  kind: MockupKind;
+  label: string;
+  class?: string;
+}
+const { kind, label, class: cls = '' } = Astro.props;
+
+const N = 'var(--color-navy)';
+const I = 'var(--color-ink)';
+const M = 'var(--color-ink-soft)';
+const ICE = 'var(--color-ice)';
+const ICES = 'var(--color-ice-soft)';
+const L = 'var(--color-lime)';
+const S = 'var(--color-silver)';
+const P = 'var(--color-pearl)';
+const W = 'var(--color-paper)';
+
+// Deterministic sample series
+const trend = [38, 44, 41, 52, 49, 61, 58, 70, 66, 79, 84, 92];
+const target = [40, 44, 48, 52, 56, 60, 64, 68, 72, 76, 80, 84];
+const cx = (i: number) => 56 + i * (508 / 11);
+const cy = (v: number) => 470 - (v / 100) * 190;
+const line = (arr: number[]) => arr.map((v, i) => `${i ? 'L' : 'M'}${cx(i).toFixed(1)} ${cy(v).toFixed(1)}`).join(' ');
+const regions = [
+  { n: 'North', v: 0.92 },
+  { n: 'Central', v: 0.74 },
+  { n: 'South', v: 0.58 },
+  { n: 'West', v: 0.41 },
+  { n: 'Export', v: 0.3 },
+];
+const columns = [
+  { t: 'Requested', c: 3 },
+  { t: 'Scheduled', c: 2 },
+  { t: 'In progress', c: 3 },
+  { t: 'Completed', c: 2 },
+];
+const rows = [
+  ['ORD-2041', 'Northfield depot', 'On track', 0.82],
+  ['ORD-2042', 'Harbour terminal', 'Review', 0.46],
+  ['ORD-2043', 'Central hub', 'On track', 0.91],
+  ['ORD-2044', 'Eastgate store', 'Delayed', 0.28],
+  ['ORD-2045', 'Riverside unit', 'On track', 0.74],
+  ['ORD-2046', 'Airport cargo', 'Review', 0.52],
+  ['ORD-2047', 'Southbank store', 'On track', 0.88],
+] as const;
+const days = Array.from({ length: 35 }, (_, i) => i - 2);
+const available = new Set([4, 5, 6, 11, 12, 13, 14, 18, 19, 20, 25, 26, 27]);
+---
+<svg
+  viewBox="0 0 960 640"
+  role="img"
+  aria-label={label}
+  class:list={['mockup block h-auto w-full', cls]}
+  preserveAspectRatio="xMidYMid meet"
+>
+  <rect x="0.5" y="0.5" width="959" height="639" rx="14" fill={W} stroke={S} />
+  <g>
+    <circle cx="26" cy="22" r="4.5" fill={S} />
+    <circle cx="42" cy="22" r="4.5" fill={S} />
+    <circle cx="58" cy="22" r="4.5" fill={S} />
+    <rect x="360" y="12" width="240" height="20" rx="10" fill={P} />
+    <line x1="0" y1="44" x2="960" y2="44" stroke={S} />
+  </g>
+
+  {kind === 'board' && (
+    <g>
+      <path d="M1 45h175v594H14A13 13 0 0 1 1 626z" fill={N} />
+      <rect x="20" y="66" width="22" height="22" rx="5" fill={L} />
+      <text x="52" y="82" class="t b" fill={P}>Operations</text>
+      {['Board', 'Schedule', 'Customers', 'Team', 'Reports'].map((t, i) => (
+        <g>
+          {i === 0 && <rect x="12" y={112} width="152" height="32" rx="8" fill="var(--color-navy-line)" />}
+          <rect x="24" y={122 + i * 40} width="12" height="12" rx="3" fill={i === 0 ? L : 'var(--color-navy-mist)'} opacity={i === 0 ? 1 : 0.6} />
+          <text x="46" y={133 + i * 40} class="t" fill={i === 0 ? P : 'var(--color-navy-mist)'}>{t}</text>
+        </g>
+      ))}
+      <text x="204" y="88" class="h" fill={I}>Planning board</text>
+      <text x="204" y="110" class="t" fill={M}>Week 24 · 10 open jobs</text>
+      <rect x="820" y="70" width="112" height="34" rx="17" fill={N} />
+      <text x="876" y="92" class="t b" fill={P} text-anchor="middle">+ New job</text>
+      {columns.map((col, c) => (
+        <g transform={`translate(${204 + c * 184} 134)`}>
+          <rect width="172" height="482" rx="10" fill={P} />
+          <text x="14" y="26" class="t b" fill={I}>{col.t}</text>
+          <rect x="134" y="12" width="26" height="20" rx="10" fill={c === 2 ? L : S} />
+          <text x="147" y="26" class="s b" fill={I} text-anchor="middle">{col.c}</text>
+          {Array.from({ length: col.c }).map((_, r) => (
+            <g transform={`translate(10 ${44 + r * 112})`}>
+              <rect width="152" height="100" rx="8" fill={W} stroke={S} />
+              <rect x="12" y="14" width={[96, 78, 110][r % 3]} height="8" rx="4" fill={I} />
+              <rect x="12" y="32" width={[70, 104, 60][(r + c) % 3]} height="6" rx="3" fill={S} />
+              <rect x="12" y="46" width="52" height="6" rx="3" fill={S} />
+              <circle cx="24" cy="78" r="10" fill={ICE} />
+              <circle cx="40" cy="78" r="10" fill={N} stroke={W} stroke-width="2" />
+              <rect x="94" y="68" width="46" height="20" rx="10" fill={c === 3 ? L : ICES} />
+              <rect x="104" y="76" width="26" height="4" rx="2" fill={c === 3 ? I : N} />
+            </g>
+          ))}
+        </g>
+      ))}
+    </g>
+  )}
+
+  {kind === 'booking' && (
+    <g>
+      <path d="M0 45h960v581a14 14 0 0 1-14 14H14a14 14 0 0 1-14-14z" fill={P} />
+      <g transform="translate(40 84)">
+        <text class="s b" fill={M} letter-spacing="1.5">STEP 2 OF 3</text>
+        <text y="40" class="h" fill={I}>Choose a time</text>
+        <text y="66" class="t" fill={M}>On-site assessment · 60 minutes</text>
+        <rect y="100" width="230" height="150" rx="12" fill={N} />
+        <text x="20" y="134" class="s" fill="var(--color-navy-mist)">SELECTED</text>
+        <text x="20" y="168" class="h" fill={P}>Thu 12 June</text>
+        <text x="20" y="194" class="t" fill={P}>10:30 – 11:30</text>
+        <rect x="20" y="212" width="80" height="20" rx="10" fill={L} />
+        <text x="60" y="226" class="s b" fill={I} text-anchor="middle">Available</text>
+        <rect y="270" width="230" height="1" fill={S} />
+        {['Location confirmed', 'Details entered', 'Confirmation'].map((t, i) => (
+          <g transform={`translate(0 ${296 + i * 36})`}>
+            <circle cx="9" cy="0" r="9" fill={i < 2 ? N : W} stroke={i < 2 ? N : S} />
+            {i < 2 && <path d="M5 0l3 3 5-6" stroke={L} stroke-width="2" fill="none" stroke-linecap="round" />}
+            <text x="28" y="4" class="t" fill={i < 2 ? I : M}>{t}</text>
+          </g>
+        ))}
+      </g>
+      <g transform="translate(320 84)">
+        <rect width="380" height="500" rx="14" fill={W} stroke={S} />
+        <text x="24" y="40" class="t b" fill={I}>June</text>
+        {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => (
+          <text x={48 + i * 48} y="80" class="s" fill={M} text-anchor="middle">{d}</text>
+        ))}
+        {days.map((d, i) => {
+          const x = 48 + (i % 7) * 48;
+          const y = 124 + Math.floor(i / 7) * 60;
+          const inMonth = d >= 1 && d <= 30;
+          const sel = d === 12;
+          return (
+            <g>
+              {sel && <circle cx={x} cy={y - 5} r="20" fill={N} />}
+              {!sel && available.has(d) && <circle cx={x} cy={y - 5} r="20" fill={ICES} />}
+              {inMonth && (
+                <text x={x} y={y} class="t" fill={sel ? P : available.has(d) ? N : 'var(--color-navy-mist)'} text-anchor="middle">{d}</text>
+              )}
+              {sel && <circle cx={x} cy={y + 9} r="2" fill={L} />}
+            </g>
+          );
+        })}
+        <rect x="24" y="436" width="332" height="1" fill={S} />
+        <rect x="24" y="456" width="120" height="8" rx="4" fill={S} />
+        <rect x="24" y="472" width="200" height="6" rx="3" fill={S} />
+      </g>
+      <g transform="translate(730 84)">
+        <text y="16" class="t b" fill={I}>Thursday 12</text>
+        {['09:00', '10:30', '12:00', '14:00', '15:30', '17:00'].map((t, i) => (
+          <g transform={`translate(0 ${36 + i * 56})`}>
+            <rect width="190" height="44" rx="22" fill={i === 1 ? L : W} stroke={i === 1 ? L : S} />
+            <text x="95" y="27" class="t b" fill={I} text-anchor="middle">{t}</text>
+          </g>
+        ))}
+        <rect y="456" width="190" height="44" rx="22" fill={N} />
+        <text x="95" y="483" class="t b" fill={P} text-anchor="middle">Continue</text>
+      </g>
+    </g>
+  )}
+
+  {kind === 'site' && (
+    <g>
+      <g transform="translate(48 78)">
+        <rect width="18" height="18" rx="4" fill={N} />
+        <rect x="28" y="5" width="70" height="8" rx="4" fill={I} />
+        {[0, 1, 2, 3].map((i) => <rect x={560 + i * 62} y="6" width="40" height="6" rx="3" fill={S} />)}
+        <rect x="800" y="-6" width="64" height="30" rx="15" fill={N} />
+      </g>
+      <text x="48" y="212" class="d" fill={I}>Built for the</text>
+      <text x="48" y="286" class="d" fill={I}>long <tspan fill={N}>run.</tspan></text>
+      <rect x="150" y="296" width="150" height="10" fill={L} />
+      <rect x="48" y="336" width="250" height="7" rx="3.5" fill={S} />
+      <rect x="48" y="352" width="210" height="7" rx="3.5" fill={S} />
+      <rect x="48" y="390" width="130" height="40" rx="20" fill={N} />
+      <rect x="190" y="390" width="130" height="40" rx="20" fill={W} stroke={S} />
+      <g transform="translate(500 128)">
+        <rect width="412" height="320" rx="14" fill={ICE} />
+        <rect x="60" y="60" width="150" height="200" rx="6" fill={N} />
+        <rect x="150" y="110" width="200" height="150" rx="6" fill={W} opacity="0.85" />
+        <rect x="150" y="110" width="200" height="150" rx="6" fill="none" stroke={N} stroke-width="1.5" />
+        <circle cx="300" cy="100" r="34" fill={L} />
+      </g>
+      <line x1="48" y1="492" x2="912" y2="492" stroke={S} />
+      {[0, 1, 2].map((i) => (
+        <g transform={`translate(${48 + i * 296} 520)`}>
+          <text class="s b" fill={N}>0{i + 1}</text>
+          <rect y="18" width="150" height="9" rx="4.5" fill={I} />
+          <rect y="40" width="230" height="6" rx="3" fill={S} />
+          <rect y="54" width="190" height="6" rx="3" fill={S} />
+          <rect y="68" width="210" height="6" rx="3" fill={S} />
+        </g>
+      ))}
+    </g>
+  )}
+
+  {kind === 'exec' && (
+    <g>
+      <text x="32" y="84" class="h" fill={I}>Revenue overview</text>
+      <text x="32" y="106" class="t" fill={M}>Sample data · refreshed 06:00</text>
+      {['Year', 'Quarter', 'Month'].map((t, i) => (
+        <g transform={`translate(${700 + i * 78} 68)`}>
+          <rect width="70" height="28" rx="14" fill={i === 1 ? N : W} stroke={i === 1 ? N : S} />
+          <text x="35" y="19" class="s b" fill={i === 1 ? P : M} text-anchor="middle">{t}</text>
+        </g>
+      ))}
+      {[
+        ['Revenue', '4.82M', '+8.4%'],
+        ['Gross margin', '38.4%', '+1.2 pt'],
+        ['Pipeline', '11.6M', '+14%'],
+        ['Win rate', '27%', '−0.8 pt'],
+      ].map(([k, v, d], i) => (
+        <g transform={`translate(${32 + i * 226} 130)`}>
+          <rect width="214" height="96" rx="10" fill={i === 0 ? N : P} />
+          <text x="16" y="28" class="s" fill={i === 0 ? 'var(--color-navy-mist)' : M}>{k}</text>
+          <text x="16" y="68" class="k" fill={i === 0 ? P : I}>{v}</text>
+          <rect x="140" y="50" width="60" height="22" rx="11" fill={i === 3 ? S : L} />
+          <text x="170" y="65" class="s b" fill={I} text-anchor="middle">{d}</text>
+        </g>
+      ))}
+      <g>
+        <rect x="32" y="246" width="560" height="362" rx="10" fill={W} stroke={S} />
+        <text x="52" y="278" class="t b" fill={I}>Revenue vs target</text>
+        <rect x="430" y="268" width="10" height="10" rx="2" fill={N} />
+        <text x="446" y="278" class="s" fill={M}>Actual</text>
+        <line x1="500" y1="273" x2="518" y2="273" stroke={M} stroke-dasharray="3 3" />
+        <text x="524" y="278" class="s" fill={M}>Target</text>
+        {[0, 1, 2, 3].map((i) => <line x1="56" x2="564" y1={300 + i * 56.6} y2={300 + i * 56.6} stroke={S} />)}
+        <path d={`${line(trend)} L${cx(11)} 470 L${cx(0)} 470 Z`} fill={ICE} opacity="0.7" />
+        <path d={line(target)} fill="none" stroke={M} stroke-width="1.5" stroke-dasharray="4 4" />
+        <path d={line(trend)} fill="none" stroke={N} stroke-width="3" stroke-linejoin="round" stroke-linecap="round" />
+        <circle cx={cx(11)} cy={cy(92)} r="7" fill={L} stroke={N} stroke-width="2.5" />
+        {['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'].map((m, i) => (
+          <text x={cx(i)} y="494" class="s" fill={M} text-anchor="middle">{m}</text>
+        ))}
+        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((i) => (
+          <rect x={cx(i) - 9} y={590 - [18, 26, 22, 34, 30, 40, 36, 48, 44, 56, 60, 66][i]} width="18" height={[18, 26, 22, 34, 30, 40, 36, 48, 44, 56, 60, 66][i]} rx="3" fill={i === 11 ? N : ICE} />
+        ))}
+      </g>
+      <g transform="translate(608 246)">
+        <rect width="320" height="362" rx="10" fill={W} stroke={S} />
+        <text x="20" y="32" class="t b" fill={I}>By region</text>
+        {regions.map((r, i) => (
+          <g transform={`translate(20 ${58 + i * 34})`}>
+            <text y="12" class="s" fill={M}>{r.n}</text>
+            <rect x="64" y="2" width="216" height="12" rx="6" fill={P} />
+            <rect x="64" y="2" width={216 * r.v} height="12" rx="6" fill={i === 0 ? N : i === 1 ? 'var(--color-navy-line)' : ICE} />
+          </g>
+        ))}
+        <line x1="20" x2="300" y1="236" y2="236" stroke={S} />
+        <g transform="translate(74 298)">
+          <circle r="40" fill="none" stroke={ICE} stroke-width="16" />
+          <circle r="40" fill="none" stroke={N} stroke-width="16" stroke-dasharray="158 252" transform="rotate(-90)" />
+          <circle r="40" fill="none" stroke={L} stroke-width="16" stroke-dasharray="42 252" stroke-dashoffset="-158" transform="rotate(-90)" />
+        </g>
+        <text x="140" y="284" class="s" fill={M}>New business</text>
+        <text x="140" y="304" class="t b" fill={I}>63%</text>
+        <text x="220" y="284" class="s" fill={M}>Renewals</text>
+        <text x="220" y="304" class="t b" fill={I}>17%</text>
+      </g>
+    </g>
+  )}
+
+  {kind === 'ops' && (
+    <g>
+      <text x="32" y="84" class="h" fill={I}>Operations detail</text>
+      <text x="32" y="106" class="t" fill={M}>Sample data · 7 of 128 records</text>
+      {['All', 'On track', 'Review', 'Delayed'].map((t, i) => (
+        <g transform={`translate(${32 + i * 96} 126)`}>
+          <rect width="88" height="30" rx="15" fill={i === 0 ? N : W} stroke={i === 0 ? N : S} />
+          <text x="44" y="20" class="s b" fill={i === 0 ? P : M} text-anchor="middle">{t}</text>
+        </g>
+      ))}
+      <rect x="716" y="126" width="212" height="30" rx="15" fill={P} />
+      <circle cx="736" cy="141" r="5" fill="none" stroke={M} stroke-width="1.5" />
+      <rect x="750" y="138" width="90" height="6" rx="3" fill={S} />
+      <rect x="32" y="176" width="896" height="36" rx="8" fill={P} />
+      {[['Reference', 52], ['Location', 200], ['Status', 430], ['Fill rate', 580], ['Variance', 800]].map(([t, x]) => (
+        <text x={x} y="199" class="s b" fill={M}>{t}</text>
+      ))}
+      {rows.map(([ref, loc, st, v], i) => (
+        <g transform={`translate(32 ${212 + i * 56})`}>
+          <line x1="0" x2="896" y1="56" y2="56" stroke={S} />
+          <text x="20" y="34" class="t b" fill={I}>{ref}</text>
+          <text x="168" y="34" class="t" fill={M}>{loc}</text>
+          <rect x="398" y="17" width="84" height="24" rx="12" fill={st === 'On track' ? L : st === 'Review' ? ICE : I} />
+          <text x="440" y="33" class="s b" fill={st === 'Delayed' ? P : I} text-anchor="middle">{st}</text>
+          <rect x="548" y="24" width="180" height="10" rx="5" fill={P} />
+          <rect x="548" y="24" width={180 * v} height="10" rx="5" fill={v < 0.4 ? I : N} />
+          <text x="768" y="34" class="t b" fill={I}>{v < 0.5 ? '−' : '+'}{Math.round(Math.abs(v - 0.5) * 40)}%</text>
+          <path d={`M828 ${v < 0.5 ? 24 : 36} l8 ${v < 0.5 ? 10 : -10} l8 ${v < 0.5 ? -4 : 4} l10 ${v < 0.5 ? 8 : -8}`} fill="none" stroke={N} stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+      ))}
+    </g>
+  )}
+
+  {kind === 'pipeline' && (
+    <g>
+      <path d="M1 45h958v581a13 13 0 0 1-13 13H14A13 13 0 0 1 1 626z" fill={P} />
+      <text x="32" y="84" class="h" fill={I}>Pipeline lineage</text>
+      <text x="32" y="106" class="t" fill={M}>Last run 04:10 · all checks passed</text>
+      {['SOURCES', 'STAGING', 'MODEL', 'REPORTS'].map((t, i) => (
+        <text x={[110, 356, 596, 826][i]} y="150" class="s b" fill={M} text-anchor="middle" letter-spacing="1.5">{t}</text>
+      ))}
+      {[220, 340, 460].map((y) => (
+        <path d={`M196 ${y} C 250 ${y}, 240 340, 276 340`} fill="none" stroke={N} stroke-width="1.6" opacity="0.55" />
+      ))}
+      <path d="M436 340 H516" fill="none" stroke={N} stroke-width="1.6" />
+      <path d="M676 340 C 720 340, 710 270, 746 270" fill="none" stroke={N} stroke-width="1.6" />
+      <path d="M676 340 C 720 340, 710 410, 746 410" fill="none" stroke={N} stroke-width="1.6" />
+      <circle cx="476" cy="340" r="5" fill={L} stroke={N} stroke-width="1.5" />
+      <circle cx="240" cy="300" r="5" fill={L} stroke={N} stroke-width="1.5" />
+      {[['Orders', 'ERP export', 220], ['Inventory', 'Warehouse DB', 340], ['Deliveries', 'Logistics API', 460]].map(([t, s, y]) => (
+        <g transform={`translate(24 ${Number(y) - 38})`}>
+          <rect width="172" height="76" rx="10" fill={W} stroke={S} />
+          <rect x="14" y="16" width="24" height="24" rx="6" fill={ICE} />
+          <text x="48" y="33" class="t b" fill={I}>{t}</text>
+          <text x="14" y="60" class="s" fill={M}>{s}</text>
+        </g>
+      ))}
+      <g transform="translate(276 268)">
+        <rect width="160" height="144" rx="10" fill={W} stroke={S} />
+        <text x="16" y="30" class="t b" fill={I}>Clean &amp; validate</text>
+        {['Keys unique', 'No nulls', 'Ranges valid'].map((t, i) => (
+          <g transform={`translate(16 ${50 + i * 28})`}>
+            <circle cx="8" cy="8" r="8" fill={L} />
+            <path d="M4.5 8l2.5 2.5 4.5-5" stroke={I} stroke-width="1.6" fill="none" stroke-linecap="round" />
+            <text x="26" y="12" class="s" fill={M}>{t}</text>
+          </g>
+        ))}
+      </g>
+      <g transform="translate(516 258)">
+        <rect width="160" height="164" rx="10" fill={N} />
+        <text x="16" y="30" class="t b" fill={P}>Star schema</text>
+        <rect x="56" y="70" width="48" height="36" rx="5" fill={L} />
+        {[[16, 48], [104, 48], [16, 114], [104, 114]].map(([x, y]) => (
+          <g>
+            <line x1={x + 20} y1={y + 12} x2="80" y2="88" stroke="var(--color-navy-mist)" stroke-width="1" />
+            <rect x={x} y={y} width="40" height="24" rx="4" fill="var(--color-navy-line)" stroke="var(--color-navy-mist)" stroke-width="0.8" />
+          </g>
+        ))}
+        <rect x="56" y="70" width="48" height="36" rx="5" fill={L} />
+      </g>
+      {[['Operations KPIs', 232], ['Supplier scorecard', 372]].map(([t, y]) => (
+        <g transform={`translate(746 ${y})`}>
+          <rect width="184" height="76" rx="10" fill={W} stroke={S} />
+          <text x="14" y="28" class="t b" fill={I}>{t}</text>
+          {[10, 18, 14, 26, 22, 30].map((h, i) => <rect x={14 + i * 14} y={64 - h} width="9" height={h} rx="2" fill={i === 5 ? N : ICE} />)}
+          <rect x="116" y="42" width="54" height="20" rx="10" fill={ICES} />
+          <text x="143" y="56" class="s b" fill={N} text-anchor="middle">Daily</text>
+        </g>
+      ))}
+      <rect x="24" y="544" width="906" height="64" rx="10" fill={W} stroke={S} />
+      {[['Rows processed', '1.24M'], ['Checks passed', '42 / 42'], ['Duration', '6m 12s'], ['Next run', '04:10']].map(([k, v], i) => (
+        <g transform={`translate(${48 + i * 226} 544)`}>
+          <text y="26" class="s" fill={M}>{k}</text>
+          <text y="48" class="t b" fill={I}>{v}</text>
+        </g>
+      ))}
+    </g>
+  )}
+
+  {kind === 'chat' && (
+    <g>
+      <path d="M1 45h210v594H14A13 13 0 0 1 1 626z" fill={P} />
+      <text x="24" y="82" class="t b" fill={I}>Conversations</text>
+      {[0, 1, 2, 3, 4].map((i) => (
+        <g transform={`translate(12 ${100 + i * 64})`}>
+          <rect width="186" height="56" rx="10" fill={i === 0 ? W : 'none'} stroke={i === 0 ? S : 'none'} />
+          <circle cx="26" cy="28" r="12" fill={i === 0 ? N : ICE} />
+          <rect x="48" y="18" width={[96, 80, 110, 70, 90][i]} height="7" rx="3.5" fill={I} opacity={i === 0 ? 1 : 0.55} />
+          <rect x="48" y="33" width={[120, 100, 84, 116, 76][i]} height="5" rx="2.5" fill={S} />
+        </g>
+      ))}
+      <line x1="211" y1="45" x2="211" y2="640" stroke={S} />
+      <g transform="translate(236 70)">
+        <g transform="translate(180 0)">
+          <rect width="282" height="52" rx="16" fill={N} />
+          <text x="18" y="23" class="t" fill={P}>Where is my order #48210?</text>
+          <text x="18" y="41" class="t" fill={P}>Can I still change the address?</text>
+        </g>
+        <g transform="translate(0 74)">
+          <rect width="250" height="38" rx="10" fill={W} stroke={S} stroke-dasharray="4 4" />
+          <rect x="12" y="10" width="18" height="18" rx="4" fill={L} />
+          <text x="40" y="24" class="s b" fill={I}>lookup_order(48210)</text>
+          <text x="204" y="24" class="s" fill={M}>0.4s</text>
+        </g>
+        <g transform="translate(0 130)">
+          <rect width="400" height="190" rx="16" fill={ICES} />
+          <text x="18" y="30" class="t" fill={I}>Your order was dispatched yesterday and is</text>
+          <text x="18" y="50" class="t" fill={I}>due on Thursday.</text>
+          <text x="18" y="82" class="t" fill={I}>Addresses can be changed until a parcel is</text>
+          <text x="18" y="102" class="t" fill={I}>out for delivery, so yours is still eligible.</text>
+          <text x="18" y="134" class="t" fill={I}>Would you like me to request the change?</text>
+          <rect x="18" y="152" width="112" height="24" rx="12" fill={W} stroke={S} />
+          <text x="74" y="168" class="s b" fill={N} text-anchor="middle">1 · Delivery policy</text>
+          <rect x="138" y="152" width="96" height="24" rx="12" fill={W} stroke={S} />
+          <text x="186" y="168" class="s b" fill={N} text-anchor="middle">2 · Order record</text>
+        </g>
+        <g transform="translate(0 340)">
+          <rect width="150" height="36" rx="18" fill={W} stroke={N} />
+          <text x="75" y="23" class="s b" fill={N} text-anchor="middle">Yes, change address</text>
+          <rect x="160" width="150" height="36" rx="18" fill={W} stroke={S} />
+          <text x="235" y="23" class="s b" fill={M} text-anchor="middle">Talk to a person</text>
+        </g>
+        <g transform="translate(0 494)">
+          <rect width="462" height="50" rx="25" fill={W} stroke={S} />
+          <rect x="22" y="22" width="150" height="6" rx="3" fill={S} />
+          <circle cx="432" cy="25" r="17" fill={N} />
+          <path d="M426 25h12m-5-5 5 5-5 5" stroke={L} stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+      </g>
+      <line x1="722" y1="45" x2="722" y2="640" stroke={S} />
+      <g transform="translate(744 82)">
+        <text class="t b" fill={I}>Sources</text>
+        {['Delivery policy', 'Order record'].map((t, i) => (
+          <g transform={`translate(0 ${20 + i * 104})`}>
+            <rect width="190" height="92" rx="10" fill={P} />
+            <text x="14" y="26" class="s b" fill={N}>{i + 1} · {t}</text>
+            <rect x="14" y="40" width="150" height="5" rx="2.5" fill={S} />
+            <rect x="14" y="52" width="162" height="5" rx="2.5" fill={S} />
+            <rect x="14" y="64" width="110" height="5" rx="2.5" fill={L} />
+          </g>
+        ))}
+        <text y="262" class="t b" fill={I}>Guardrails</text>
+        {['Approved content only', 'Read-only tools', 'Escalation enabled'].map((t, i) => (
+          <g transform={`translate(0 ${282 + i * 30})`}>
+            <circle cx="8" cy="8" r="8" fill={L} />
+            <path d="M4.5 8l2.5 2.5 4.5-5" stroke={I} stroke-width="1.6" fill="none" stroke-linecap="round" />
+            <text x="26" y="12" class="s" fill={M}>{t}</text>
+          </g>
+        ))}
+      </g>
+    </g>
+  )}
+
+  {kind === 'flow' && (
+    <g>
+      <path d="M1 45h958v581a13 13 0 0 1-13 13H14A13 13 0 0 1 1 626z" fill={P} />
+      <g opacity="0.6">
+        {Array.from({ length: 12 }).map((_, r) =>
+          Array.from({ length: 20 }).map((_, c) => <circle cx={40 + c * 46} cy={128 + r * 44} r="1.2" fill={S} />),
+        )}
+      </g>
+      <text x="32" y="84" class="h" fill={I}>Workflow</text>
+      <rect x="150" y="66" width="72" height="24" rx="12" fill={L} />
+      <text x="186" y="82" class="s b" fill={I} text-anchor="middle">Active</text>
+      <text x="32" y="106" class="t" fill={M}>Sample run · 6 steps · 1 human review</text>
+
+      <path d="M196 300 H256" stroke={N} stroke-width="2" fill="none" />
+      <path d="M426 300 H486" stroke={N} stroke-width="2" fill="none" />
+      <path d="M656 300 C 700 300, 690 210, 730 210" stroke={N} stroke-width="2" fill="none" />
+      <path d="M656 300 C 700 300, 690 400, 730 400" stroke={M} stroke-width="1.6" fill="none" stroke-dasharray="5 5" />
+      <path d="M815 438 V 480" stroke={M} stroke-width="1.6" fill="none" stroke-dasharray="5 5" />
+      {[226, 456].map((x) => <circle cx={x} cy="300" r="5" fill={L} stroke={N} stroke-width="1.5" />)}
+      <circle cx="693" cy="252" r="5" fill={L} stroke={N} stroke-width="1.5" />
+
+      <g transform="translate(36 262)">
+        <rect width="160" height="76" rx="12" fill={W} stroke={S} />
+        <rect x="14" y="16" width="26" height="26" rx="7" fill={ICE} />
+        <path d="M20 24h14v10H20z M20 24l7 6 7-6" stroke={N} stroke-width="1.5" fill="none" />
+        <text x="50" y="34" class="t b" fill={I}>New email</text>
+        <text x="14" y="62" class="s" fill={M}>Trigger · mailbox</text>
+      </g>
+      <g transform="translate(256 252)">
+        <rect width="170" height="96" rx="12" fill={N} />
+        <rect x="14" y="16" width="26" height="26" rx="7" fill={L} />
+        <path d="M27 21l2.2 5.3 5.3 2.2-5.3 2.2L27 36l-2.2-5.3-5.3-2.2 5.3-2.2z" fill={I} />
+        <text x="50" y="34" class="t b" fill={P}>Extract fields</text>
+        <text x="14" y="62" class="s" fill="var(--color-navy-mist)">AI · document reading</text>
+        <rect x="14" y="72" width="100" height="6" rx="3" fill="var(--color-navy-line)" />
+        <rect x="14" y="72" width="86" height="6" rx="3" fill={L} />
+      </g>
+      <g transform="translate(486 262)">
+        <rect width="170" height="76" rx="12" fill={W} stroke={S} />
+        <rect x="14" y="16" width="26" height="26" rx="7" fill={ICE} />
+        <path d="M21 29l4.5 4.5 8-9" stroke={N} stroke-width="1.8" fill="none" stroke-linecap="round" />
+        <text x="50" y="34" class="t b" fill={I}>Validate</text>
+        <text x="14" y="62" class="s" fill={M}>Rules · match to PO</text>
+      </g>
+      <g transform="translate(730 172)">
+        <rect width="170" height="76" rx="12" fill={W} stroke={N} stroke-width="1.5" />
+        <rect x="14" y="16" width="26" height="26" rx="7" fill={L} />
+        <text x="50" y="34" class="t b" fill={I}>Post to ledger</text>
+        <text x="14" y="62" class="s" fill={M}>Action · accounting API</text>
+      </g>
+      <g transform="translate(730 362)">
+        <rect width="170" height="76" rx="12" fill={W} stroke={S} />
+        <rect x="14" y="16" width="26" height="26" rx="7" fill={ICE} />
+        <circle cx="27" cy="25" r="3.5" fill={N} />
+        <path d="M20 36c1-5 13-5 14 0" stroke={N} stroke-width="1.6" fill="none" />
+        <text x="50" y="34" class="t b" fill={I}>Human review</text>
+        <text x="14" y="62" class="s" fill={M}>Exception · approver</text>
+      </g>
+      <g transform="translate(730 480)">
+        <rect width="170" height="56" rx="12" fill={W} stroke={S} stroke-dasharray="5 5" />
+        <text x="85" y="33" class="t" fill={M} text-anchor="middle">Approve or reject</text>
+      </g>
+      <g transform="translate(36 430)">
+        <rect width="390" height="176" rx="12" fill={W} stroke={S} />
+        <text x="18" y="30" class="t b" fill={I}>Run log</text>
+        {['Email received', 'Fields extracted · confidence high', 'Matched to purchase order', 'Posted to ledger'].map((t, i) => (
+          <g transform={`translate(18 ${50 + i * 30})`}>
+            <circle cx="6" cy="6" r="6" fill={i === 3 ? L : ICE} />
+            <text x="24" y="10" class="s" fill={M}>{t}</text>
+            <text x="354" y="10" class="s" fill={M} text-anchor="end">0{i + 1}:0{i * 2}s</text>
+          </g>
+        ))}
+      </g>
+    </g>
+  )}
+</svg>
+
+<style>
+  .mockup { font-family: var(--font-sans); border-radius: 14px; }
+  .mockup :global(.t) { font-size: 13px; }
+  .mockup :global(.s) { font-size: 10.5px; }
+  .mockup :global(.b) { font-weight: 600; }
+  .mockup :global(.h) { font-family: var(--font-display); font-size: 21px; font-weight: 600; letter-spacing: -0.02em; }
+  .mockup :global(.k) { font-family: var(--font-display); font-size: 30px; font-weight: 600; letter-spacing: -0.03em; }
+  .mockup :global(.d) { font-family: var(--font-display); font-size: 68px; font-weight: 700; letter-spacing: -0.04em; }
+</style>

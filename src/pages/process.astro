@@ -1,0 +1,96 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/ui/PageHero.astro';
+import CtaBand from '../components/ui/CtaBand.astro';
+import { processSteps } from '../content/process';
+
+const expectations = [
+  { title: 'A named point of contact', text: 'One person accountable for your project and available to answer questions.' },
+  { title: 'Demos, not status theatre', text: 'Progress is shown as working output you can click, query or run.' },
+  { title: 'Changes handled openly', text: 'If scope shifts, we explain the effect on time and cost before acting.' },
+  { title: 'Documentation at handover', text: 'You receive what you need to run, maintain and extend the system.' },
+];
+---
+<BaseLayout
+  title="Our Process"
+  description="From discovery to optimization: the seven-stage engineering process AT NEXORA Technologies uses to deliver software, data and AI projects."
+>
+  <PageHero
+    eyebrow="Our Process"
+    crumbs={[{ label: 'Home', href: '/' }]}
+    title="A clear path from <span class='mark'>idea to impact.</span>"
+    intro="Seven stages, each ending with something concrete you can review, question and approve."
+  >
+    <ol class="mt-12 hidden grid-cols-7 border-t border-navy/15 lg:grid" aria-label="Process stages">
+      {processSteps.map((s) => (
+        <li class="relative pt-5">
+          <span class="absolute -top-[0.3125rem] left-0 h-2.5 w-2.5 rounded-[2px] border-[1.5px] border-navy bg-lime" aria-hidden="true"></span>
+          <a href={`#${s.name.toLowerCase()}`} class="group block">
+            <span class="eyebrow text-ink-soft">{s.index}</span>
+            <span class="mt-1 block font-display text-xl font-semibold tracking-[-0.02em] text-navy group-hover:underline">{s.name}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </PageHero>
+
+  <section class="pb-12 md:pb-24" aria-label="Process stages in detail">
+    <div class="shell">
+      <ol class="border-t border-navy/15">
+        {processSteps.map((s) => (
+          <li id={s.name.toLowerCase()} class="step scroll-mt-24 border-b border-navy/15 py-10 md:py-16" data-reveal>
+            <div class="grid gap-6 lg:grid-cols-12 lg:gap-8">
+              <p class="step-index font-display font-bold leading-[0.8] tracking-[-0.05em] text-navy lg:col-span-3" aria-hidden="true">{s.index}</p>
+              <div class="lg:col-span-5">
+                <h2 class="t-d2 text-navy"><span class="sr-only">Stage {Number(s.index)}: </span>{s.name}</h2>
+                <p class="t-lead mt-4 text-navy">{s.summary}</p>
+                <p class="mt-5 max-w-lg leading-relaxed text-ink-soft">{s.detail}</p>
+              </div>
+              <div class="lg:col-span-4">
+                <h3 class="eyebrow border-b border-silver pb-3 text-ink-soft">Activities</h3>
+                <ul>
+                  {s.activities.map((a) => (
+                    <li class="flex items-center gap-3 border-b border-silver py-3 text-[0.9375rem] text-ink">
+                      <span class="h-1.5 w-1.5 flex-none rounded-[1px] bg-navy" aria-hidden="true"></span>{a}
+                    </li>
+                  ))}
+                </ul>
+                <div class="mt-6 flex items-center justify-between gap-4 rounded-[var(--radius-frame)] bg-navy px-5 py-4 text-pearl">
+                  <span class="eyebrow text-lime">Output</span>
+                  <span class="text-right font-medium">{s.output}</span>
+                </div>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section-tight" aria-labelledby="expect-title">
+    <div class="shell">
+      <div class="rounded-[var(--radius-panel)] bg-ice p-6 sm:p-10 lg:p-16">
+        <p class="eyebrow text-navy">Working with us</p>
+        <h2 id="expect-title" class="t-d2 mt-6 max-w-[18ch] text-navy">What you can expect at every stage.</h2>
+        <ul class="mt-12 grid border-t border-navy/15 sm:grid-cols-2 lg:grid-cols-4">
+          {expectations.map((e, i) => (
+            <li class:list={['border-b border-navy/15 py-7 sm:px-6 lg:border-b-0', i % 2 === 1 && 'sm:border-l', i > 0 && 'lg:border-l', i === 0 && 'sm:pl-0', i === 2 && 'sm:pl-0 lg:pl-6']} data-reveal style={`--reveal-i:${i}`}>
+              <h3 class="font-display text-[1.375rem] font-semibold leading-tight tracking-[-0.025em] text-navy">{e.title}</h3>
+              <p class="mt-3 leading-relaxed text-ink-soft">{e.text}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand title="Ready for stage one? Discovery starts with a conversation." />
+</BaseLayout>
+
+<style>
+  .step-index { font-size: clamp(4rem, 2rem + 9vw, 10rem); }
+  .step:hover .step-index { color: var(--color-navy); }
+  @supports (-webkit-text-stroke: 1px black) {
+    .step-index { color: transparent; -webkit-text-stroke: 1.5px var(--color-navy); transition: color 0.4s; }
+  }
+</style>

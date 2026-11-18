@@ -1,0 +1,32 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  intro?: string;
+  crumbs?: { label: string; href: string }[];
+}
+const { eyebrow, title, intro, crumbs = [] } = Astro.props;
+---
+<section class="pt-[4.5rem]">
+  <div class="shell pb-12 pt-12 md:pb-20 md:pt-20">
+    {crumbs.length > 0 && (
+      <nav aria-label="Breadcrumb" class="mb-8">
+        <ol class="eyebrow flex flex-wrap items-center gap-x-3 gap-y-1 text-ink-soft">
+          {crumbs.map((c) => (
+            <li class="flex items-center gap-3">
+              <a href={c.href} class="inline-flex min-h-8 items-center hover:text-navy">{c.label}</a>
+              <span aria-hidden="true">/</span>
+            </li>
+          ))}
+          <li aria-current="page" class="text-navy">{eyebrow}</li>
+        </ol>
+      </nav>
+    )}
+    {crumbs.length === 0 && <p class="eyebrow mb-8 text-navy">{eyebrow}</p>}
+    <div class="grid gap-8 lg:grid-cols-12 lg:items-end">
+      <h1 class="t-d1 text-navy lg:col-span-8" set:html={title} />
+      {intro && <p class="t-lead text-ink-soft lg:col-span-4 lg:pb-2">{intro}</p>}
+    </div>
+    <slot />
+  </div>
+</section>

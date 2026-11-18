@@ -1,0 +1,277 @@
+---
+import { ArrowUpRight, ChevronDown, Menu, X, Mail, Phone, MessageCircle } from '@lucide/astro';
+import Logo from '../ui/Logo.astro';
+import { company, mainNav } from '../../content/site';
+
+const path = Astro.url.pathname;
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+<header
+  id="site-header"
+  class="fixed inset-x-0 top-0 z-50 border-b border-transparent transition-[background-color,border-color] duration-300"
+>
+  <div class="shell flex h-[4.5rem] items-center justify-between gap-6">
+    <a href="/" class="text-navy" aria-label="AT NEXORA Technologies — home">
+      <Logo />
+    </a>
+
+    <nav aria-label="Primary" class="hidden lg:block">
+      <ul class="flex items-center gap-1">
+        {mainNav.map((item) =>
+          item.children ? (
+            <li class="relative" data-dropdown>
+              <div class="flex items-center">
+                <a
+                  href={item.href}
+                  aria-current={isActive(item.href) ? 'page' : undefined}
+                  class="nav-link rounded-full py-2 pl-4 pr-1 text-[0.9375rem] font-medium text-ink"
+                >{item.label}</a>
+                <button
+                  type="button"
+                  class="grid h-9 w-7 place-items-center rounded-full text-ink"
+                  aria-expanded="false"
+                  aria-controls="services-menu"
+                  aria-label={`Show ${item.label} menu`}
+                  data-dropdown-toggle
+                >
+                  <ChevronDown class="h-4 w-4 transition-transform duration-300" aria-hidden="true" />
+                </button>
+              </div>
+              <div
+                id="services-menu"
+                data-dropdown-panel
+                class="invisible absolute left-1/2 top-full w-[26rem] -translate-x-1/2 translate-y-1 pt-3 opacity-0 transition-[opacity,transform,visibility] duration-200"
+              >
+                <ul class="overflow-hidden rounded-[var(--radius-panel)] border border-silver bg-paper p-2 shadow-[0_24px_60px_-24px_rgba(20,43,74,0.35)]">
+                  {item.children.map((child, i) => (
+                    <li>
+                      <a
+                        href={child.href}
+                        class="group flex items-start gap-4 rounded-xl px-4 py-3.5 transition-colors hover:bg-ice-soft focus-visible:bg-ice-soft"
+                      >
+                        <span class="eyebrow mt-1 text-navy/60">0{i + 1}</span>
+                        <span class="flex-1">
+                          <span class="block font-display text-lg font-semibold leading-tight tracking-[-0.02em] text-navy">{child.label}</span>
+                          <span class="mt-1 block text-sm leading-snug text-ink-soft">{child.note}</span>
+                        </span>
+                        <ArrowUpRight class="mt-1 h-4 w-4 text-navy opacity-0 transition-opacity group-hover:opacity-100" aria-hidden="true" />
+                      </a>
+                    </li>
+                  ))}
+                  <li class="mt-1 border-t border-silver">
+                    <a href={item.href} class="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-navy hover:bg-ice-soft">
+                      Services overview
+                      <ArrowUpRight class="h-4 w-4" aria-hidden="true" />
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+          ) : (
+            <li>
+              <a
+                href={item.href}
+                aria-current={isActive(item.href) ? 'page' : undefined}
+                class="nav-link rounded-full px-4 py-2 text-[0.9375rem] font-medium text-ink"
+              >{item.label}</a>
+            </li>
+          ),
+        )}
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a href="/contact/" class="btn btn-primary hidden !min-h-11 !px-5 !py-2 text-[0.9375rem] sm:inline-flex">
+        Let’s Talk
+        <ArrowUpRight aria-hidden="true" />
+      </a>
+      <button
+        type="button"
+        id="menu-open"
+        class="grid h-12 w-12 place-items-center rounded-full border border-navy/20 text-navy lg:hidden"
+        aria-haspopup="dialog"
+        aria-controls="mobile-menu"
+        aria-label="Open menu"
+      >
+        <Menu class="h-5 w-5" aria-hidden="true" />
+      </button>
+    </div>
+  </div>
+</header>
+
+<dialog id="mobile-menu" aria-label="Site menu" class="on-dark mobile-menu bg-navy text-pearl">
+  <div class="flex h-full flex-col">
+    <div class="shell flex h-[4.5rem] flex-none items-center justify-between">
+      <a href="/" aria-label="AT NEXORA Technologies — home"><Logo tone="light" /></a>
+      <button
+        type="button"
+        id="menu-close"
+        class="grid h-12 w-12 place-items-center rounded-full border border-navy-line"
+        aria-label="Close menu"
+      >
+        <X class="h-5 w-5" aria-hidden="true" />
+      </button>
+    </div>
+
+    <nav aria-label="Mobile" class="shell flex-1 overflow-y-auto overscroll-contain pb-6 pt-4">
+      <ul class="border-t border-navy-line">
+        {mainNav.map((item, i) => (
+          <li class="border-b border-navy-line">
+            <a
+              href={item.href}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+              class="flex min-h-[3.75rem] items-center justify-between gap-4 py-3 font-display text-[1.75rem] font-semibold leading-none tracking-[-0.03em]"
+            >
+              <span>{item.label}</span>
+              <span class="eyebrow text-navy-mist">0{i + 1}</span>
+            </a>
+            {item.children && (
+              <ul class="grid gap-1 pb-4">
+                {item.children.map((child) => (
+                  <li>
+                    <a href={child.href} class="flex min-h-11 items-center gap-3 text-[1.0625rem] text-navy-mist">
+                      <span class="h-px w-4 bg-lime" aria-hidden="true"></span>
+                      {child.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="shell flex-none border-t border-navy-line pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5">
+      <a href="/contact/" class="btn btn-lime w-full">
+        Let’s Talk
+        <ArrowUpRight aria-hidden="true" />
+      </a>
+      <ul class="mt-4 grid grid-cols-3 gap-2 text-sm">
+        <li>
+          <a href={company.emailHref} class="flex min-h-12 items-center justify-center gap-2 rounded-full border border-navy-line">
+            <Mail class="h-4 w-4" aria-hidden="true" /> Email
+          </a>
+        </li>
+        <li>
+          <a href={company.phoneHref} class="flex min-h-12 items-center justify-center gap-2 rounded-full border border-navy-line">
+            <Phone class="h-4 w-4" aria-hidden="true" /> Call
+          </a>
+        </li>
+        <li>
+          <a href={company.whatsappHref} target="_blank" rel="noopener noreferrer" class="flex min-h-12 items-center justify-center gap-2 rounded-full border border-navy-line">
+            <MessageCircle class="h-4 w-4" aria-hidden="true" /> WhatsApp
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  #site-header[data-scrolled='true'] {
+    background: color-mix(in srgb, var(--color-pearl) 88%, transparent);
+    backdrop-filter: saturate(1.4) blur(14px);
+    -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    border-color: var(--color-silver);
+  }
+  .nav-link { position: relative; transition: color 0.2s; }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 1rem;
+    right: 1rem;
+    bottom: 0.3rem;
+    height: 1.5px;
+    background: var(--color-navy);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s var(--ease-out-expo);
+  }
+  [data-dropdown] .nav-link::after { right: 0.25rem; }
+  .nav-link:hover::after,
+  .nav-link[aria-current='page']::after { transform: scaleX(1); }
+  .nav-link:hover { color: var(--color-navy); }
+
+  [data-dropdown][data-open='true'] [data-dropdown-panel] {
+    visibility: visible;
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  [data-dropdown][data-open='true'] [data-dropdown-toggle] :global(svg) { transform: rotate(180deg); }
+
+  .mobile-menu {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    transform: translateY(-1rem);
+    transition: opacity 0.3s, transform 0.4s var(--ease-out-expo), display 0.4s allow-discrete, overlay 0.4s allow-discrete;
+  }
+  .mobile-menu[open] { opacity: 1; transform: none; }
+  @starting-style {
+    .mobile-menu[open] { opacity: 0; transform: translateY(-1rem); }
+  }
+  .mobile-menu::backdrop { background: var(--color-navy); }
+  .mobile-menu a[aria-current='page'] > span:first-child {
+    background: linear-gradient(var(--color-lime), var(--color-lime)) no-repeat 0 100% / 100% 2px;
+  }
+</style>
+
+<script>
+  const header = document.getElementById('site-header');
+  const onScroll = () => header?.setAttribute('data-scrolled', String(window.scrollY > 8));
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Desktop dropdown: hover, click and keyboard.
+  document.querySelectorAll<HTMLElement>('[data-dropdown]').forEach((dd) => {
+    const toggle = dd.querySelector<HTMLButtonElement>('[data-dropdown-toggle]');
+    let closeTimer: number | undefined;
+    const set = (open: boolean) => {
+      window.clearTimeout(closeTimer);
+      dd.dataset.open = String(open);
+      toggle?.setAttribute('aria-expanded', String(open));
+    };
+    dd.addEventListener('pointerenter', (e) => e.pointerType === 'mouse' && set(true));
+    dd.addEventListener('pointerleave', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      closeTimer = window.setTimeout(() => set(false), 140);
+    });
+    toggle?.addEventListener('click', () => set(dd.dataset.open !== 'true'));
+    dd.addEventListener('focusout', (e) => {
+      if (!dd.contains(e.relatedTarget as Node | null)) set(false);
+    });
+    dd.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && dd.dataset.open === 'true') {
+        set(false);
+        toggle?.focus();
+      }
+    });
+  });
+
+  // Mobile menu: native <dialog> gives focus trapping, Escape and background inertness.
+  const menu = document.getElementById('mobile-menu') as HTMLDialogElement | null;
+  const openBtn = document.getElementById('menu-open');
+  const closeBtn = document.getElementById('menu-close');
+  const lock = (on: boolean) => {
+    document.documentElement.style.overflow = on ? 'hidden' : '';
+  };
+  openBtn?.addEventListener('click', () => {
+    menu?.showModal();
+    lock(true);
+  });
+  closeBtn?.addEventListener('click', () => menu?.close());
+  menu?.addEventListener('close', () => {
+    lock(false);
+    openBtn?.focus();
+  });
+  menu?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => menu.close()));
+  window.matchMedia('(min-width: 64rem)').addEventListener('change', (e) => e.matches && menu?.open && menu.close());
+</script>

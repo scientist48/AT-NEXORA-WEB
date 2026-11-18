@@ -1,0 +1,72 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/ui/PageHero.astro';
+import CtaBand from '../components/ui/CtaBand.astro';
+import FaqList from '../components/ui/FaqList.astro';
+import { faqGroups } from '../content/faqs';
+import { services } from '../content/services';
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqGroups.flatMap((g) => g.items).map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  },
+];
+---
+<BaseLayout
+  title="Frequently Asked Questions"
+  description="Answers to common questions about working with AT NEXORA Technologies: how projects start, pricing, timelines, delivery, ownership and data security."
+  jsonLd={jsonLd}
+>
+  <PageHero
+    eyebrow="FAQ"
+    crumbs={[{ label: 'Home', href: '/' }]}
+    title="Questions, <span class='mark'>answered plainly.</span>"
+    intro="If yours is not here, ask us directly. We are happy to help."
+  />
+
+  <section class="pb-12 md:pb-24" aria-label="Frequently asked questions">
+    <div class="shell grid gap-12 lg:grid-cols-12 lg:gap-8">
+      <nav aria-label="FAQ topics" class="lg:col-span-3">
+        <div class="lg:sticky lg:top-28">
+          <p class="eyebrow text-ink-soft">Topics</p>
+          <ul class="mt-4 flex flex-wrap gap-2 lg:block lg:border-t lg:border-silver">
+            {faqGroups.map((g) => (
+              <li class="lg:border-b lg:border-silver">
+                <a href={`#${g.id}`} class="inline-flex min-h-11 items-center rounded-full border border-navy/20 px-4 text-[0.9375rem] font-medium text-navy hover:bg-navy hover:text-pearl lg:flex lg:min-h-12 lg:rounded-none lg:border-0 lg:px-0 lg:hover:bg-transparent lg:hover:text-navy lg:hover:underline">{g.title}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </nav>
+      <div class="grid gap-16 lg:col-span-9">
+        {faqGroups.map((g) => (
+          <section id={g.id} aria-labelledby={`${g.id}-title`} class="scroll-mt-28">
+            <h2 id={`${g.id}-title`} class="t-d3 mb-6 text-navy">{g.title}</h2>
+            <FaqList items={g.items} />
+          </section>
+        ))}
+        <section aria-labelledby="service-faq-title">
+          <h2 id="service-faq-title" class="t-d3 mb-6 text-navy">Service-specific questions</h2>
+          <ul class="grid border-t border-silver sm:grid-cols-3">
+            {services.map((s, i) => (
+              <li class:list={['border-b border-silver', i > 0 && 'sm:border-l']}>
+                <a href={`/services/${s.slug}/#faq-title`} class:list={['flex min-h-24 flex-col justify-center py-5 hover:text-navy', i > 0 && 'sm:pl-6']}>
+                  <span class="eyebrow text-ink-soft">{s.index}</span>
+                  <span class="mt-1 font-display text-xl font-semibold tracking-[-0.02em] text-navy underline-offset-4 hover:underline">{s.name}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand title="Still have a question?" text="Send it over. A real person will reply with a straight answer." />
+</BaseLayout>

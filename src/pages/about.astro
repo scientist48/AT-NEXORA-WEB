@@ -1,0 +1,167 @@
+---
+import { ArrowUpRight } from '@lucide/astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/ui/PageHero.astro';
+import CtaBand from '../components/ui/CtaBand.astro';
+import { services } from '../content/services';
+
+const engineeringPrinciples = [
+  { title: 'Understand before building', text: 'We do not write production code for a problem we cannot explain in plain language.' },
+  { title: 'Simple first', text: 'The simplest design that meets the requirement wins. Complexity has to earn its place.' },
+  { title: 'Typed, tested, reviewed', text: 'Strong typing, automated checks and peer review are the default, not an optional extra.' },
+  { title: 'Design for change', text: 'Requirements move. We structure systems so tomorrow’s change is an edit, not a rewrite.' },
+  { title: 'Secure by default', text: 'Least-privilege access, validated input and protected secrets from the first commit.' },
+  { title: 'Measure what matters', text: 'Performance, accuracy and usage are measured, so improvements are based on evidence.' },
+];
+
+const collaboration = [
+  { title: 'Direct access', text: 'You speak with the people designing and building your system, without layers in between.' },
+  { title: 'A shared backlog', text: 'One visible list of what is done, what is in progress and what comes next.' },
+  { title: 'Regular demos', text: 'Working output is shown frequently, so feedback arrives while it is still cheap to act on.' },
+  { title: 'Written updates', text: 'Clear summaries of progress, decisions and risks that you can forward to your own team.' },
+];
+---
+<BaseLayout
+  title="About"
+  description="AT NEXORA Technologies is a technology and digital engineering company. Learn about our vision, mission, philosophy and the engineering principles behind our work."
+>
+  <PageHero
+    eyebrow="About"
+    crumbs={[{ label: 'Home', href: '/' }]}
+    title="An engineering company for the <span class='mark'>intelligent</span> era."
+    intro="We build the software, data and AI systems that help businesses operate better and decide faster."
+  />
+
+  <section class="section-tight" aria-labelledby="who-title">
+    <div class="shell grid gap-10 border-t border-silver pt-12 lg:grid-cols-12 lg:gap-8 lg:pt-20">
+      <h2 id="who-title" class="eyebrow text-navy lg:col-span-3 lg:pt-3">Who we are</h2>
+      <div class="lg:col-span-9">
+        <p class="t-d3 text-navy" data-reveal>
+          AT NEXORA Technologies is a global technology and digital engineering company delivering intelligent digital products, business intelligence solutions and AI-powered automation.
+        </p>
+        <div class="mt-10 grid gap-8 text-[1.0625rem] leading-relaxed text-ink-soft md:grid-cols-2 md:gap-12">
+          <p data-reveal>
+            We serve businesses looking for modern software engineering, data intelligence and intelligent business systems. Some come to us with a product to build. Others arrive with a reporting problem, or a process that consumes too many hours.
+          </p>
+          <p data-reveal style="--reveal-i:1">
+            In each case the work is the same at heart: understand how the business operates, then engineer technology that makes it measurably easier to run. Our name stands for three words we hold ourselves to: Engineering. Intelligence. Innovation.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight" aria-label="Vision and mission">
+    <div class="shell grid gap-5 md:gap-6 lg:grid-cols-2">
+      <article class="on-dark flex min-h-[24rem] flex-col justify-between rounded-[var(--radius-panel)] bg-navy p-8 text-pearl sm:p-12" data-reveal>
+        <h2 class="eyebrow text-lime">Our vision</h2>
+        <p class="t-d3 mt-16">
+          A world in which every ambitious business can run on technology that is as well engineered as that of the largest organisations.
+        </p>
+      </article>
+      <article class="flex min-h-[24rem] flex-col justify-between rounded-[var(--radius-panel)] bg-ice p-8 sm:p-12" data-reveal style="--reveal-i:1">
+        <h2 class="eyebrow text-navy">Our mission</h2>
+        <p class="t-d3 mt-16 text-navy">
+          To engineer digital products, data systems and AI solutions that are practical, reliable and built to last, and to be a partner that tells clients the truth.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="philosophy-title">
+    <div class="shell grid gap-10 lg:grid-cols-12 lg:gap-8">
+      <h2 id="philosophy-title" class="eyebrow text-navy lg:col-span-3 lg:pt-4">Our philosophy</h2>
+      <div class="lg:col-span-9">
+        <blockquote class="t-d2 text-navy" data-reveal>
+          Technology is only valuable when it <span class="mark">changes how work gets done.</span>
+        </blockquote>
+        <div class="mt-12 grid gap-8 border-t border-silver pt-10 text-[1.0625rem] leading-relaxed text-ink-soft md:grid-cols-3">
+          <p data-reveal>
+            <strong class="mb-2 block font-display text-xl font-semibold tracking-[-0.02em] text-navy">Outcomes over output</strong>
+            We judge our work by what it enables, not by how many features or reports were shipped.
+          </p>
+          <p data-reveal style="--reveal-i:1">
+            <strong class="mb-2 block font-display text-xl font-semibold tracking-[-0.02em] text-navy">Connected, not siloed</strong>
+            Software, data and AI are designed together, because each one depends on the quality of the others.
+          </p>
+          <p data-reveal style="--reveal-i:2">
+            <strong class="mb-2 block font-display text-xl font-semibold tracking-[-0.02em] text-navy">Honest by design</strong>
+            We give straightforward advice, including when the right answer is smaller, simpler or not to build at all.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight" aria-labelledby="capabilities-title">
+    <div class="shell">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p class="eyebrow text-navy">Our capabilities</p>
+          <h2 id="capabilities-title" class="t-d2 mt-5 text-navy">Three connected divisions.</h2>
+        </div>
+        <a href="/services/" class="link self-start font-medium text-navy sm:self-auto">Services overview</a>
+      </div>
+      <ul class="mt-12 border-t border-navy/15">
+        {services.map((s) => (
+          <li class="border-b border-navy/15" data-reveal>
+            <a href={`/services/${s.slug}/`} class="group grid gap-4 py-8 md:grid-cols-12 md:items-center md:gap-8 md:py-10">
+              <span class="eyebrow text-ink-soft md:col-span-1">{s.index}</span>
+              <span class="font-display text-[2rem] font-semibold leading-none tracking-[-0.035em] text-navy md:col-span-5 md:text-[2.75rem]">{s.name}</span>
+              <span class="text-ink-soft md:col-span-5">{s.summary}</span>
+              <span class="hidden justify-self-end md:col-span-1 md:block">
+                <span class="grid h-12 w-12 place-items-center rounded-full border border-navy/20 text-navy transition-colors duration-300 group-hover:bg-navy group-hover:text-pearl">
+                  <ArrowUpRight class="h-4 w-4" aria-hidden="true" />
+                </span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="on-dark section mt-12 bg-navy text-pearl" aria-labelledby="principles-title">
+    <div class="shell grid gap-12 lg:grid-cols-12 lg:gap-8">
+      <div class="lg:col-span-4">
+        <p class="eyebrow text-lime">Engineering principles</p>
+        <h2 id="principles-title" class="t-d2 mt-6">The rules we build by.</h2>
+      </div>
+      <ol class="grid border-t border-navy-line sm:grid-cols-2 lg:col-span-8">
+        {engineeringPrinciples.map((p, i) => (
+          <li class:list={['border-b border-navy-line py-8', i % 2 === 0 ? 'sm:pr-10' : 'sm:border-l sm:pl-10']} data-reveal style={`--reveal-i:${i % 2}`}>
+            <p class="eyebrow text-lime">0{i + 1}</p>
+            <h3 class="mt-4 font-display text-[1.5rem] font-semibold leading-tight tracking-[-0.025em]">{p.title}</h3>
+            <p class="mt-3 leading-relaxed text-navy-mist">{p.text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="collab-title">
+    <div class="shell grid gap-12 lg:grid-cols-12 lg:gap-8">
+      <div class="lg:col-span-5">
+        <p class="eyebrow text-navy">Collaboration</p>
+        <h2 id="collab-title" class="t-d2 mt-6 text-navy">We work with you, not just for you.</h2>
+        <p class="t-lead mt-6 max-w-md text-ink-soft">
+          Good systems come from close collaboration between the people who know the business and the people who know the technology.
+        </p>
+        <a href="/process/" class="btn btn-ghost mt-8">See our process <ArrowUpRight aria-hidden="true" /></a>
+      </div>
+      <dl class="border-t border-silver lg:col-span-6 lg:col-start-7">
+        {collaboration.map((c, i) => (
+          <div class="grid gap-2 border-b border-silver py-7 sm:grid-cols-[3rem_1fr]" data-reveal>
+            <span class="eyebrow pt-1.5 text-ink-soft" aria-hidden="true">0{i + 1}</span>
+            <div>
+              <dt class="font-display text-[1.5rem] font-semibold leading-tight tracking-[-0.025em] text-navy">{c.title}</dt>
+              <dd class="mt-2 leading-relaxed text-ink-soft">{c.text}</dd>
+            </div>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <CtaBand title="Let’s talk about what you want to build." />
+</BaseLayout>

@@ -1,0 +1,114 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/ui/PageHero.astro';
+import CtaBand from '../../components/ui/CtaBand.astro';
+import ProjectCard from '../../components/ui/ProjectCard.astro';
+import { projects } from '../../content/projects';
+import { services } from '../../content/services';
+
+const filters = [
+  { id: 'all', label: 'All work', count: projects.length },
+  ...services.map((s) => ({ id: s.slug, label: s.name, count: projects.filter((p) => p.category === s.slug).length })),
+];
+---
+<BaseLayout
+  title="Portfolio"
+  description="Concept demonstrations from AT NEXORA Technologies across digital engineering, data intelligence and AI automation, showing how we approach real business problems."
+>
+  <PageHero
+    eyebrow="Portfolio"
+    crumbs={[{ label: 'Home', href: '/' }]}
+    title="Work that shows <span class='mark'>how we think.</span>"
+    intro="A collection of concept demonstrations across our three divisions."
+  />
+
+  <section class="pb-8" aria-label="About this portfolio">
+    <div class="shell">
+      <div class="flex flex-col gap-3 rounded-[var(--radius-frame)] border border-navy/15 bg-ice-soft p-5 sm:flex-row sm:items-start sm:gap-5 sm:p-6">
+        <span class="eyebrow flex-none self-start rounded-full bg-lime px-3 py-1.5 text-ink">Concept</span>
+        <p class="max-w-3xl text-ink">
+          Everything on this page is a self-initiated concept demonstration, not a client project. The interfaces use sample data, and no client results are claimed. They exist to show our approach, design standards and engineering decisions.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight !pt-8" aria-label="Projects">
+    <div class="shell">
+      <div class="sticky top-[4.5rem] z-30 -mx-[clamp(1.25rem,0.4rem+3.6vw,4rem)] border-b border-silver bg-pearl/90 px-[clamp(1.25rem,0.4rem+3.6vw,4rem)] py-3 backdrop-blur-md">
+        <div class="flex items-center justify-between gap-4">
+          <div role="group" aria-label="Filter projects by division" class="filters -mx-1 flex gap-2 overflow-x-auto px-1 py-1">
+            {filters.map((f, i) => (
+              <button
+                type="button"
+                data-filter={f.id}
+                aria-pressed={i === 0 ? 'true' : 'false'}
+                class="filter-btn inline-flex min-h-11 flex-none items-center gap-2 rounded-full border border-navy/20 px-4 text-[0.9375rem] font-medium text-navy transition-colors"
+              >
+                {f.label}
+                <span class="eyebrow opacity-60">{f.count}</span>
+              </button>
+            ))}
+          </div>
+          <p id="filter-status" role="status" aria-live="polite" class="eyebrow hidden flex-none text-ink-soft md:block">
+            Showing {projects.length} of {projects.length}
+          </p>
+        </div>
+      </div>
+
+      <div id="project-grid" class="mt-10 grid gap-x-8 gap-y-14 md:mt-14 md:grid-cols-2">
+        {projects.map((p) => (
+          <div data-project data-category={p.category}>
+            <ProjectCard project={p} headingLevel="h2" />
+          </div>
+        ))}
+      </div>
+      <p id="filter-empty" class="mt-16 hidden text-center text-ink-soft">No projects in this category yet.</p>
+    </div>
+  </section>
+
+  <CtaBand title="Want to see how we would approach your project?" text="Share the problem and we will walk you through how we would tackle it." />
+</BaseLayout>
+
+<style>
+  .filters { scrollbar-width: none; }
+  .filters::-webkit-scrollbar { display: none; }
+  .filter-btn:hover { border-color: var(--color-navy); }
+  .filter-btn[aria-pressed='true'] { background: var(--color-navy); border-color: var(--color-navy); color: var(--color-pearl); }
+  [data-project] { transition: opacity 0.4s ease, transform 0.5s var(--ease-out-expo); }
+  [data-project].is-entering { opacity: 0; transform: translateY(1rem); }
+</style>
+
+<script>
+  const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-filter]'));
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-project]'));
+  const status = document.getElementById('filter-status');
+  const empty = document.getElementById('filter-empty');
+  const valid = new Set(buttons.map((b) => b.dataset.filter));
+
+  function apply(filter: string, updateUrl = true) {
+    let shown = 0;
+    for (const card of cards) {
+      const match = filter === 'all' || card.dataset.category === filter;
+      card.hidden = !match;
+      if (match) {
+        shown++;
+        card.classList.add('is-entering');
+        requestAnimationFrame(() => requestAnimationFrame(() => card.classList.remove('is-entering')));
+      }
+    }
+    for (const b of buttons) b.setAttribute('aria-pressed', String(b.dataset.filter === filter));
+    if (status) status.textContent = `Showing ${shown} of ${cards.length}`;
+    empty?.classList.toggle('hidden', shown > 0);
+    if (updateUrl) {
+      const url = new URL(window.location.href);
+      if (filter === 'all') url.searchParams.delete('category');
+      else url.searchParams.set('category', filter);
+      history.replaceState(null, '', url);
+    }
+  }
+
+  buttons.forEach((b) => b.addEventListener('click', () => apply(b.dataset.filter ?? 'all')));
+  const initial = new URLSearchParams(window.location.search).get('category');
+  if (initial && valid.has(initial)) apply(initial, false);
+</script>

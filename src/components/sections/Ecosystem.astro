@@ -1,0 +1,17 @@
+---
+import SectionHead from '../ui/SectionHead.astro';
+import EcosystemViz from '../three/EcosystemViz.tsx';
+import { ecosystemLayers } from '../../content/ecosystem';
+---
+<section class="section" aria-label="Connected technology ecosystem">
+  <div class="shell">
+    <SectionHead
+      eyebrow="Connected ecosystem"
+      title="Software, data and AI are one system."
+      intro="Each layer makes the next more valuable. Software generates data, data gives AI its context, and AI sends decisions back into the software."
+    />
+    <div class="mt-12 md:mt-20">
+      <EcosystemViz client:visible={{ rootMargin: '300px' }} layers={ecosystemLayers} poster="/posters/ecosystem.webp" />
+    </div>
+  </div>
+</section>

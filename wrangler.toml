@@ -1,0 +1,10 @@
+# Cloudflare Pages configuration
+name = "at-nexora-technologies"
+compatibility_date = "2026-01-01"
+pages_build_output_dir = "./dist"
+
+# Optional: bind a KV namespace to make contact-form rate limiting durable
+# across isolates. Without it, a best-effort in-memory limiter is used.
+# [[kv_namespaces]]
+# binding = "RATE_LIMIT_KV"
+# id = "<your-kv-namespace-id>"

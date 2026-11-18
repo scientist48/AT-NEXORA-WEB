@@ -1,0 +1,33 @@
+---
+import { Plus } from '@lucide/astro';
+interface Props { items: { q: string; a: string }[]; group?: string }
+const { items, group } = Astro.props;
+---
+<div class="border-t border-silver">
+  {items.map((item) => (
+    <details class="faq group border-b border-silver" name={group}>
+      <summary class="flex min-h-[4.5rem] cursor-pointer list-none items-center justify-between gap-6 py-5">
+        <h3 class="font-display text-[1.25rem] font-semibold leading-snug tracking-[-0.02em] text-navy md:text-[1.5rem]">{item.q}</h3>
+        <span class="grid h-10 w-10 flex-none place-items-center rounded-full border border-navy/20 text-navy transition-[transform,background-color,color] duration-300 group-open:rotate-45 group-open:bg-navy group-open:text-pearl">
+          <Plus class="h-4 w-4" aria-hidden="true" />
+        </span>
+      </summary>
+      <div class="max-w-3xl pb-7 pr-12 text-[1.0625rem] leading-relaxed text-ink-soft">
+        <p>{item.a}</p>
+      </div>
+    </details>
+  ))}
+</div>
+
+<style>
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition: block-size 0.4s var(--ease-out-expo), content-visibility 0.4s allow-discrete;
+  }
+  .faq[open]::details-content { block-size: auto; }
+  @supports (interpolate-size: allow-keywords) {
+    .faq { interpolate-size: allow-keywords; }
+  }
+</style>

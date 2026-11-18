@@ -1,0 +1,78 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+import { company } from '../content/site';
+---
+<LegalLayout
+  title="Terms and Conditions"
+  heading="Terms and Conditions"
+  description="The terms that govern use of the AT NEXORA Technologies website."
+  updated="14 November 2026"
+>
+  <p>
+    These terms govern your use of the website operated by {company.name} (“AT NEXORA”, “we”, “us”). By using the website you agree to them. If you do not agree, please do not use the website.
+  </p>
+
+  <h2 id="about">1. About this website</h2>
+  <p>
+    This website provides general information about our company and services and allows you to contact us. Nothing on it is an offer capable of acceptance, and the content does not constitute professional advice for your specific situation.
+  </p>
+
+  <h2 id="services">2. Our services</h2>
+  <p>
+    Any services we provide are governed by a separate written agreement, proposal or statement of work agreed between you and us. If there is a conflict between these website terms and such an agreement, the agreement takes precedence for those services.
+  </p>
+
+  <h2 id="portfolio">3. Portfolio and concept work</h2>
+  <p>
+    Projects labelled “Concept” or “Concept demonstration” are self-initiated studies created to illustrate our approach. They are not client engagements, the data shown in them is illustrative, and they do not represent results achieved for any client.
+  </p>
+
+  <h2 id="ip">4. Intellectual property</h2>
+  <p>
+    The content of this website, including text, design, graphics, three-dimensional artwork, interface studies and code, belongs to AT NEXORA or its licensors. You may view and share links to the website. You may not copy, reproduce or reuse its content for commercial purposes without our written permission.
+  </p>
+  <p>Third-party product names and trademarks mentioned on the website belong to their respective owners and are used for identification only.</p>
+
+  <h2 id="acceptable-use">5. Acceptable use</h2>
+  <p>You agree not to:</p>
+  <ul>
+    <li>use the website in any way that is unlawful or harmful;</li>
+    <li>attempt to gain unauthorised access to the website or its systems;</li>
+    <li>submit false, misleading, abusive or automated enquiries;</li>
+    <li>interfere with the security or normal operation of the website.</li>
+  </ul>
+
+  <h2 id="enquiries">6. Enquiries</h2>
+  <p>
+    Submitting an enquiry does not create a contract or a client relationship. Please do not include confidential information in an initial enquiry; we are happy to agree a non-disclosure agreement before you share sensitive details.
+  </p>
+
+  <h2 id="accuracy">7. Accuracy of information</h2>
+  <p>
+    We take care to keep the website accurate and up to date, but we provide it “as is” and do not guarantee that it is complete, error-free or continuously available. We may change or remove content at any time.
+  </p>
+
+  <h2 id="links">8. External links</h2>
+  <p>The website may link to third-party sites and services, such as WhatsApp. We are not responsible for their content or practices.</p>
+
+  <h2 id="liability">9. Limitation of liability</h2>
+  <p>
+    To the extent permitted by applicable law, we are not liable for any indirect or consequential loss arising from your use of, or inability to use, this website. Nothing in these terms excludes liability that cannot lawfully be excluded.
+  </p>
+
+  <h2 id="privacy">10. Privacy</h2>
+  <p>Our handling of personal information is described in our <a href="/privacy-policy/">Privacy Policy</a>.</p>
+
+  <h2 id="changes">11. Changes to these terms</h2>
+  <p>We may revise these terms from time to time. The “last updated” date shows when they were last changed. Continued use of the website means you accept the current version.</p>
+
+  <h2 id="law">12. Governing law</h2>
+  <p>
+    These terms are governed by the laws applicable in the jurisdiction where {company.name} is established, unless mandatory law in your country provides otherwise.
+  </p>
+
+  <h2 id="contact">13. Contact</h2>
+  <p>
+    Questions about these terms can be sent to <a href={company.emailHref}>{company.email}</a>.
+  </p>
+</LegalLayout>

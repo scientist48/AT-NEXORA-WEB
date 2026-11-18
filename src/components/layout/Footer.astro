@@ -1,0 +1,75 @@
+---
+import { ArrowUpRight } from '@lucide/astro';
+import Logo from '../ui/Logo.astro';
+import { company, footerNav } from '../../content/site';
+const year = new Date().getFullYear();
+---
+<footer class="on-dark bg-navy text-pearl">
+  <div class="shell pb-8 pt-16 md:pt-24">
+    <div class="grid gap-12 lg:grid-cols-12 lg:gap-8">
+      <div class="lg:col-span-5">
+        <a href="/" aria-label="AT NEXORA Technologies — home" class="inline-block"><Logo tone="light" /></a>
+        <p class="mt-6 max-w-sm text-[1.0625rem] leading-relaxed text-navy-mist">
+          A technology and digital engineering company delivering intelligent digital products, business intelligence and AI-powered automation.
+        </p>
+        <p class="eyebrow mt-8 text-lime">{company.tagline}</p>
+      </div>
+
+      <nav aria-label="Footer" class="grid grid-cols-2 gap-8 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_max-content] lg:col-span-7">
+        <div>
+          <h2 class="eyebrow text-navy-mist">Services</h2>
+          <ul class="mt-5 grid gap-1">
+            {footerNav.services.map((l) => (
+              <li><a href={l.href} class="inline-flex min-h-10 items-center text-[1.0625rem] hover:text-lime">{l.label}</a></li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h2 class="eyebrow text-navy-mist">Company</h2>
+          <ul class="mt-5 grid gap-1">
+            {footerNav.company.map((l) => (
+              <li><a href={l.href} class="inline-flex min-h-10 items-center text-[1.0625rem] hover:text-lime">{l.label}</a></li>
+            ))}
+          </ul>
+        </div>
+        <div class="col-span-2 sm:col-span-1">
+          <h2 class="eyebrow text-navy-mist">Contact</h2>
+          <ul class="mt-5 grid gap-1 text-[1.0625rem]">
+            <li>
+              <a href={company.emailHref} class="inline-flex min-h-10 items-center [overflow-wrap:anywhere] hover:text-lime">{company.email}</a>
+            </li>
+            <li>
+              <a href={company.phoneHref} class="inline-flex min-h-10 items-center hover:text-lime">{company.phoneDisplay}</a>
+            </li>
+            <li>
+              <a href={company.whatsappHref} target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center gap-1.5 hover:text-lime">
+                WhatsApp <ArrowUpRight class="h-4 w-4" aria-hidden="true" />
+                <span class="sr-only">(opens in a new tab)</span>
+              </a>
+            </li>
+            {company.socials.map((s) => (
+              <li><a href={s.href} target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center hover:text-lime">{s.label}</a></li>
+            ))}
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <p aria-hidden="true" class="footer-word mt-16 select-none font-display font-bold leading-[0.8] tracking-[-0.05em] text-pearl/[0.07] md:mt-24">
+      AT NEXORA
+    </p>
+
+    <div class="mt-8 flex flex-col gap-4 border-t border-navy-line pt-6 text-sm text-navy-mist sm:flex-row sm:items-center sm:justify-between">
+      <p>© {year} {company.name}. All rights reserved.</p>
+      <ul class="flex gap-6">
+        {footerNav.legal.map((l) => (
+          <li><a href={l.href} class="inline-flex min-h-10 items-center hover:text-pearl">{l.label}</a></li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer-word { font-size: clamp(3.5rem, 17.4vw, 16.5rem); white-space: nowrap; }
+</style>
