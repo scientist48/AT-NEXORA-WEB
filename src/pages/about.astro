@@ -149,17 +149,17 @@ const collaboration = [
         </p>
         <a href="/process/" class="btn btn-ghost mt-8">See our process <ArrowUpRight aria-hidden="true" /></a>
       </div>
-      <dl class="border-t border-silver lg:col-span-6 lg:col-start-7">
+      <ol class="border-t border-silver lg:col-span-6 lg:col-start-7">
         {collaboration.map((c, i) => (
-          <div class="grid gap-2 border-b border-silver py-7 sm:grid-cols-[3rem_1fr]" data-reveal>
+          <li class="grid gap-2 border-b border-silver py-7 sm:grid-cols-[3rem_1fr]" data-reveal>
             <span class="eyebrow pt-1.5 text-ink-soft" aria-hidden="true">0{i + 1}</span>
             <div>
-              <dt class="font-display text-[1.5rem] font-semibold leading-tight tracking-[-0.025em] text-navy">{c.title}</dt>
-              <dd class="mt-2 leading-relaxed text-ink-soft">{c.text}</dd>
+              <h3 class="font-display text-[1.5rem] font-semibold leading-tight tracking-[-0.025em] text-navy">{c.title}</h3>
+              <p class="mt-2 leading-relaxed text-ink-soft">{c.text}</p>
             </div>
-          </div>
+          </li>
         ))}
-      </dl>
+      </ol>
     </div>
   </section>
 

@@ -37,20 +37,14 @@ export const timingSafeEqualStr = (a: string, b: string) => timingSafeEqual(enc.
 /**
  * Password hashing: PBKDF2-HMAC-SHA256, 16-byte random salt, 256-bit key.
  * Format: pbkdf2_sha256$<iterations>$<salt b64url>$<hash b64url>
- * 100 000 iterations is the maximum supported by the Workers runtime.
+ * Accepted iteration counts: 10,000–100,000 (100,000 is the Workers runtime maximum).
+ * `npm run admin:hash` produces 100,000 iterations for a chosen password (Workers Paid),
+ * or 20,000 iterations for a generated 144-bit password (Workers Free, 10 ms CPU limit).
  */
-export const PBKDF2_ITERATIONS = 100_000;
-
 async function pbkdf2(password: string, salt: Uint8Array, iterations: number): Promise<Uint8Array> {
   const key = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
   const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations }, key, 256);
   return new Uint8Array(bits);
-}
-
-export async function hashPassword(password: string, iterations = PBKDF2_ITERATIONS): Promise<string> {
-  const salt = randomBytes(16);
-  const hash = await pbkdf2(password, salt, iterations);
-  return `pbkdf2_sha256$${iterations}$${toBase64Url(salt)}$${toBase64Url(hash)}`;
 }
 
 /** A well-formed dummy hash, verified against when the username is wrong so timing is uniform. */

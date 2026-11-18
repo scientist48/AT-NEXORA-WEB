@@ -28,7 +28,7 @@ npm run check             # astro check + type-check functions/ and server/
 npm run lint              # ESLint
 npm run test:routes       # routes, links, metadata and overflow at 10 widths (needs a running server)
 npm run test:api          # contact + admin API integration tests (local D1 only, see below)
-npm run admin:hash        # generate ADMIN_PASSWORD_HASH (prompts, input hidden)
+npm run admin:hash        # generate ADMIN_PASSWORD_HASH (add -- --free-plan on the Cloudflare Free plan)
 npm run db:migrate:local  # apply migrations to the local D1
 npm run db:migrate:remote # apply migrations to the production D1
 ```
@@ -104,7 +104,7 @@ Every statement uses `IF NOT EXISTS`, and Wrangler records applied migrations in
 ### Security
 
 - **Credentials** come from two server-side secrets: `ADMIN_USERNAME` and `ADMIN_PASSWORD_HASH`. There is no default password, and the plaintext password is never stored anywhere.
-- **Password hashing:** PBKDF2-HMAC-SHA256 with 100,000 iterations (the Workers maximum) and a 16-byte random salt. Comparisons run in constant time, and a wrong username takes as long to reject as a wrong password.
+- **Password hashing:** PBKDF2-HMAC-SHA256 with a 16-byte random salt. It uses 100,000 iterations (the Workers maximum) for a chosen password, or 20,000 for a generated 144-bit password on the Free plan; see below. Comparisons run in constant time, and every attempt is checked against the configured hash, so a wrong username costs the same as a wrong password.
 - **Sessions:**
   - The session token is 256 bits of randomness; only its SHA-256 is stored in D1.
   - The cookie is `__Host-nx_admin`, set with `HttpOnly; Secure; SameSite=Strict; Path=/`.
@@ -117,49 +117,76 @@ Every statement uses `IF NOT EXISTS`, and Wrangler records applied migrations in
   - Admin responses are `no-store` and `noindex`.
   - Server errors return a generic message, never stack traces or SQL.
 
-### Cloudflare plan and sign-in CPU time
+### Password hashing and the Cloudflare Free plan
 
-Verifying a password with PBKDF2 at 100,000 iterations takes about 19 ms of CPU (measured on Node's Web Crypto). That iteration count is the maximum the Workers runtime allows, and it is deliberately not reduced. Cloudflare's **Free plan limits Pages Functions to 10 ms of CPU per request**. If sign-in at `/admin/` fails with Cloudflare error **1102** ("Worker exceeded resource limits"), move the account to **Workers Paid**, which allows far more CPU per request, rather than weakening the hash. The contact form and every other admin request use only a few SHA-256 operations and are unaffected.
+Cloudflare's Free plan allows **10 ms of CPU per request**, and a PBKDF2 check at 100,000 iterations takes about 17–19 ms. `npm run admin:hash` therefore has two modes. Both are secure:
 
-### Admin setup (first time, and to change the password)
+| Plan | Command | Password | Iterations | CPU per sign-in |
+| --- | --- | --- | --- | --- |
+| Workers **Free** | `npm run admin:hash -- --free-plan` | **generated**: 24 random characters (144 bits), shown once | 20,000 | ~4 ms |
+| Workers **Paid** | `npm run admin:hash` | you choose (min. 12 characters), hidden prompt | 100,000 (runtime maximum) | ~17–19 ms |
 
-1. Generate the hash locally. The password is typed into a hidden prompt and is not saved:
-   ```bash
-   npm run admin:hash
-   ```
-   Copy the single line it prints (`pbkdf2_sha256$100000$…`).
-2. Store both secrets in Cloudflare (Production; repeat with `--env preview` if you want admin access on preview deployments):
-   ```bash
-   npx wrangler pages secret put ADMIN_USERNAME --project-name <your-pages-project>
-   npx wrangler pages secret put ADMIN_PASSWORD_HASH --project-name <your-pages-project>
-   ```
-   Or in the dashboard: **Workers & Pages → your project → Settings → Variables and Secrets → Add → Type: Secret**.
-3. Redeploy. Secrets take effect on the next deployment.
+The free-plan mode is not weaker. Offline guessing cost is password entropy × iterations: a strong human password (~50 bits) at 100,000 iterations costs ~2^67 guesses' worth of work, while a generated 144-bit password at 20,000 iterations costs ~2^158. That is why the free-plan mode always generates the password itself and never accepts a typed one. Login also checks every attempt against the configured hash, so all attempts cost the same CPU and timing does not reveal valid usernames.
 
-To change the password, generate a new hash and replace `ADMIN_PASSWORD_HASH`. Existing sessions stay valid until they expire; to sign everyone out immediately, also run:
+If sign-in ever fails with Cloudflare error **1102** ("exceeded resource limits"), the hash was made with the paid-plan command on a Free account. Regenerate it with `--free-plan`.
+
+## Deployment checklist
+
+Cloudflare Pages deploys from GitHub (`main`). Do these once, in order. Steps 3–5 need the Wrangler CLI on your machine, inside a clone of this repository after `npm ci`.
+
+**1. Pages project build settings** (Workers & Pages → `at-nexora-technologies` → Settings → Build):
+
+| Setting | Value |
+| --- | --- |
+| Production branch | `main` |
+| Framework preset | Astro |
+| Build command | `npm run build` |
+| Build output directory | `dist` |
+| Root directory | *(empty, the repository root)* |
+| Node.js version | `22.23.4`, read automatically from `.node-version` (or set the build variable `NODE_VERSION=22.23.4`) |
+
+**2. D1 binding.** `wrangler.toml` already binds the existing database (`at-nexora-inquiries`, ID `9bb98501-4482-4301-be19-511de4e6085a`) as **`DB`** for production and preview. Because the project has a valid `wrangler.toml`, Cloudflare uses it as the source of truth for bindings. Check under Settings → Bindings after the first deploy that `DB → at-nexora-inquiries` is listed. **Do not create another database.** If the Pages project name is not `at-nexora-technologies`, change `name` in `wrangler.toml` to match.
+
+**3. Create the tables in production D1** (once now, and again whenever a new file is added to `migrations/`):
+```bash
+npx wrangler login
+npx wrangler d1 migrations apply at-nexora-inquiries --remote
+```
+It lists `0001_initial.sql` and asks for confirmation. Check it worked with:
+```bash
+npx wrangler d1 execute at-nexora-inquiries --remote --command "SELECT name FROM sqlite_master WHERE type='table'"
+```
+The output should include `inquiries`, `admin_sessions`, `rate_limits` and `d1_migrations`.
+
+**4. Generate the admin password hash** on your own machine. Nothing is written to disk:
+```bash
+npm run admin:hash -- --free-plan    # Free plan: prints a generated password (save it!) and the hash
+npm run admin:hash                   # Paid plan: prompts for your own password, prints the hash
+```
+
+**5. Store the admin secrets.** Each command prompts for the value, so it never appears in your shell history:
+```bash
+npx wrangler pages secret put ADMIN_USERNAME --project-name at-nexora-technologies
+npx wrangler pages secret put ADMIN_PASSWORD_HASH --project-name at-nexora-technologies
+```
+Paste the whole `pbkdf2_sha256$…` line as the hash. Alternatively, use the dashboard: Settings → Variables and Secrets → Add → **Type: Secret**, for the Production environment. Add them to Preview as well only if you want admin access on preview deployments.
+
+**6. Optional build variable `SITE_URL`.** Leave it unset for `https://at-nexora-technologies.pages.dev`; canonical URLs, the sitemap and Open Graph derive it automatically. Set it (no trailing slash) only after connecting a custom domain.
+
+**7. Deploy.** Push to `main`, or use Deployments → Retry deployment. Secrets and bindings take effect on the next deployment.
+
+**8. Verify the live site:**
+- [ ] `https://at-nexora-technologies.pages.dev/` loads, and the mobile menu works.
+- [ ] `/contact/`: submit a test enquiry; "Enquiry received" appears with a reference `NX-XXXXXXXX`.
+- [ ] `/admin/` redirects to `/admin/login/`; sign in.
+- [ ] The test enquiry is listed. Open it, change its status, add a note, reload: the changes persist.
+- [ ] Delete the test enquiry (with confirmation), then sign out.
+- [ ] `/robots.txt` and `/sitemap-index.xml` reference `at-nexora-technologies.pages.dev`.
+
+**Changing the admin password later:** generate a new hash, replace `ADMIN_PASSWORD_HASH`, redeploy, and sign everyone out:
 ```bash
 npx wrangler d1 execute at-nexora-inquiries --remote --command "DELETE FROM admin_sessions"
 ```
-
-## Deploying to Cloudflare Pages
-
-`wrangler.toml` binds the existing D1 database (`at-nexora-inquiries`, ID `9bb98501-4482-4301-be19-511de4e6085a`) as `DB` for production and preview. **Do not create another database.**
-
-1. **Pages project name.** Make sure `name` in `wrangler.toml` matches your Cloudflare Pages project (Workers & Pages → project name). It is only used by `wrangler pages deploy`; Git-connected builds deploy to the connected project.
-2. **Build settings:** framework preset Astro, build command `npm run build`, output directory `dist`, production branch `main`, Node 20 or later.
-3. **Apply the schema to production D1** (one time, and after adding any future migration):
-   ```bash
-   npx wrangler login        # or: export CLOUDFLARE_API_TOKEN=<token with Pages Edit, D1 Edit, Account Settings Read>
-   npx wrangler d1 migrations apply at-nexora-inquiries --remote
-   ```
-4. **Add secrets:** `ADMIN_USERNAME` and `ADMIN_PASSWORD_HASH` (see Admin setup).
-5. **`SITE_URL` (optional):** if unset, the build uses `CF_PAGES_URL` with the per-deployment hash removed, i.e. `https://at-nexora-technologies.pages.dev`. Set `SITE_URL` as a build variable once a custom domain is connected.
-6. **Deploy:** push to `main` (Git integration), or `npm run build && npx wrangler pages deploy dist --project-name <your-pages-project>`.
-7. **Verify on the live site:**
-   - Submit the contact form and note the reference.
-   - Sign in at `/admin/`; the enquiry appears.
-   - Change its status and add a note.
-   - Sign out.
 
 ### Environment variables
 

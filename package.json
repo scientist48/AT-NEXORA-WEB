@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Official website of AT NEXORA Technologies — digital engineering, data intelligence and AI automation.",
   "engines": {
-    "node": ">=20.3.0"
+    "node": ">=22.23.4"
   },
   "scripts": {
     "dev": "astro dev",
