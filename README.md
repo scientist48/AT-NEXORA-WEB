@@ -117,6 +117,10 @@ Every statement uses `IF NOT EXISTS`, and Wrangler records applied migrations in
   - Admin responses are `no-store` and `noindex`.
   - Server errors return a generic message, never stack traces or SQL.
 
+### Cloudflare plan and sign-in CPU time
+
+Verifying a password with PBKDF2 at 100,000 iterations takes about 19 ms of CPU (measured on Node's Web Crypto). That iteration count is the maximum the Workers runtime allows, and it is deliberately not reduced. Cloudflare's **Free plan limits Pages Functions to 10 ms of CPU per request**. If sign-in at `/admin/` fails with Cloudflare error **1102** ("Worker exceeded resource limits"), move the account to **Workers Paid**, which allows far more CPU per request, rather than weakening the hash. The contact form and every other admin request use only a few SHA-256 operations and are unaffected.
+
 ### Admin setup (first time, and to change the password)
 
 1. Generate the hash locally. The password is typed into a hidden prompt and is not saved:
@@ -145,11 +149,11 @@ npx wrangler d1 execute at-nexora-inquiries --remote --command "DELETE FROM admi
 2. **Build settings:** framework preset Astro, build command `npm run build`, output directory `dist`, production branch `main`, Node 20 or later.
 3. **Apply the schema to production D1** (one time, and after adding any future migration):
    ```bash
-   npx wrangler login
+   npx wrangler login        # or: export CLOUDFLARE_API_TOKEN=<token with Pages Edit, D1 Edit, Account Settings Read>
    npx wrangler d1 migrations apply at-nexora-inquiries --remote
    ```
 4. **Add secrets:** `ADMIN_USERNAME` and `ADMIN_PASSWORD_HASH` (see Admin setup).
-5. **Set the build variable `SITE_URL`** to the public URL, for example `https://<project>.pages.dev`, for canonical URLs, sitemap and Open Graph. If unset, it falls back to Cloudflare's `CF_PAGES_URL`.
+5. **`SITE_URL` (optional):** if unset, the build uses `CF_PAGES_URL` with the per-deployment hash removed, i.e. `https://at-nexora-technologies.pages.dev`. Set `SITE_URL` as a build variable once a custom domain is connected.
 6. **Deploy:** push to `main` (Git integration), or `npm run build && npx wrangler pages deploy dist --project-name <your-pages-project>`.
 7. **Verify on the live site:**
    - Submit the contact form and note the reference.
