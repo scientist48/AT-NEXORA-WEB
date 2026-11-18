@@ -1,0 +1,35 @@
+---
+import '../styles/global.css';
+import Logo from '../components/ui/Logo.astro';
+
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title} | AT NEXORA Admin</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="same-origin" />
+    <meta name="theme-color" content="#F7F8FC" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body class="min-h-dvh bg-pearl">
+    <header class="border-b border-silver bg-paper">
+      <div class="shell flex h-16 items-center justify-between gap-4">
+        <a href="/admin/" class="flex items-center gap-3 text-navy" aria-label="Inquiry dashboard">
+          <Logo />
+          <span class="eyebrow hidden rounded-full bg-ice px-2.5 py-1 text-navy sm:inline-block">Admin</span>
+        </a>
+        <slot name="header-actions" />
+      </div>
+    </header>
+    <main id="main" class="outline-none">
+      <slot />
+    </main>
+  </body>
+</html>

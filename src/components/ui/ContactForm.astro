@@ -71,7 +71,7 @@ const label = 'block text-[0.9375rem] font-medium text-navy';
     <label class="flex cursor-pointer items-start gap-3.5 text-[0.9375rem] leading-relaxed text-ink">
       <input id="cf-consent" name="consent" type="checkbox" value="yes" required class="consent mt-0.5 h-6 w-6 flex-none cursor-pointer appearance-none rounded-md border border-navy/40 bg-paper transition-colors checked:border-navy checked:bg-navy" aria-describedby="cf-consent-error" />
       <span>
-        I agree that AT NEXORA Technologies may use the information I provide to respond to my enquiry, as described in the
+        I agree that AT NEXORA Technologies may use the information I provide to respond to my enquiry, as described in the{" "}
         <a href="/privacy-policy/" class="font-medium text-navy underline underline-offset-4">Privacy Policy</a>. <span aria-hidden="true">*</span>
       </span>
     </label>
@@ -83,15 +83,20 @@ const label = 'block text-[0.9375rem] font-medium text-navy';
       <span data-submit-label>Send enquiry</span>
       <ArrowUpRight aria-hidden="true" />
     </button>
-    <p class="text-sm text-ink-soft">Your details are used only to reply to this enquiry.</p>
+    <p class="text-sm text-ink-soft">Your enquiry is stored securely and used only to reply to you.</p>
   </div>
 
   <div id="cf-status" role="status" aria-live="polite" tabindex="-1" class="outline-none">
-    <div data-state="success" hidden class="rounded-[var(--radius-frame)] border border-navy bg-navy p-6 text-pearl">
+    <div data-state="success" hidden class="rounded-[var(--radius-frame)] border border-navy bg-navy p-6 text-pearl sm:p-8">
       <p class="flex items-center gap-3 font-display text-2xl font-semibold tracking-[-0.02em]">
-        <CircleCheck class="h-6 w-6 flex-none text-lime" aria-hidden="true" /> Enquiry sent
+        <CircleCheck class="h-6 w-6 flex-none text-lime" aria-hidden="true" /> <span data-success-title>Enquiry received</span>
       </p>
-      <p class="mt-3 text-navy-mist">Thank you. Your message has been delivered to our team and we will reply to <strong class="text-pearl" data-reply-to></strong>.</p>
+      <p class="mt-3 text-navy-mist" data-success-text>Thank you. Your enquiry has been saved and our team will reply to <strong class="text-pearl" data-reply-to></strong>.</p>
+      <p class="mt-5 inline-flex flex-wrap items-center gap-3 rounded-full border border-navy-line px-4 py-2 text-sm">
+        <span class="eyebrow text-navy-mist">Reference</span>
+        <strong class="font-mono tracking-wider text-lime" data-reference></strong>
+      </p>
+      <p class="mt-5 text-sm text-navy-mist">Need a faster answer? <a href={company.whatsappHref} target="_blank" rel="noopener noreferrer" class="font-medium text-pearl underline underline-offset-4">Message us on WhatsApp<span class="sr-only"> (opens in a new tab)</span></a>.</p>
     </div>
     <div data-state="error" hidden class="rounded-[var(--radius-frame)] border border-danger/40 bg-paper p-6">
       <p class="flex items-center gap-3 font-display text-2xl font-semibold tracking-[-0.02em] text-navy">
@@ -222,8 +227,10 @@ const label = 'block text-[0.9375rem] font-medium text-navy';
       submitLabel.textContent = on ? 'Sending…' : 'Send enquiry';
     };
 
+    let inFlight = false;
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
+      if (inFlight) return;
       show('none');
       const invalid = names.filter((n) => !validate(n));
       if (invalid.length) {
@@ -238,6 +245,7 @@ const label = 'block text-[0.9375rem] font-medium text-navy';
         elapsed: Date.now() - startedAt,
       };
 
+      inFlight = true;
       busy(true);
       try {
         const res = await fetch(form.action, {
@@ -246,10 +254,21 @@ const label = 'block text-[0.9375rem] font-medium text-navy';
           body: JSON.stringify(payload),
         });
         const isJson = res.headers.get('content-type')?.includes('application/json');
-        const data: { ok?: boolean; code?: string; message?: string; errors?: Partial<Record<FieldName, string>> } = isJson ? await res.json() : {};
+        const data: { ok?: boolean; id?: string; code?: string; message?: string; errors?: Partial<Record<FieldName, string>> } = isJson ? await res.json() : {};
 
-        if (res.ok && data.ok === true) {
-          success.querySelector('[data-reply-to]')!.textContent = payload.email;
+        if (res.status === 201 && data.ok === true && data.id) {
+          success.querySelector('[data-success-title]')!.textContent = 'Enquiry received';
+          success.querySelector('[data-success-text]')!.innerHTML = 'Thank you. Your enquiry has been saved and our team will reply to <strong class="text-pearl"></strong>.';
+          success.querySelector('[data-success-text] strong')!.textContent = payload.email;
+          success.querySelector('[data-reference]')!.textContent = data.id;
+          form.reset();
+          show('success');
+          return;
+        }
+        if (res.status === 409 && data.code === 'duplicate' && data.id) {
+          success.querySelector('[data-success-title]')!.textContent = 'Already received';
+          success.querySelector('[data-success-text]')!.textContent = 'We already have this enquiry on file, so it was not saved twice. Our team will reply soon.';
+          success.querySelector('[data-reference]')!.textContent = data.id;
           form.reset();
           show('success');
           return;
@@ -265,14 +284,15 @@ const label = 'block text-[0.9375rem] font-medium text-navy';
           show('error', 'Too many enquiries have been sent from your connection in a short time. Please wait a few minutes, or contact us directly.');
           return;
         }
-        if (data.code === 'not_configured') {
-          show('error', 'Our online form is not able to deliver messages at the moment. Please send your enquiry by email or WhatsApp. Your text has been kept below.');
+        if (data.code === 'storage_unavailable' || data.code === 'storage_failed') {
+          show('error', 'Your enquiry could not be saved just now. Please try again in a moment, or contact us directly by email or WhatsApp. Your text has been kept in the form.');
           return;
         }
-        show('error', 'Something went wrong while sending your enquiry. Please try again, or contact us directly by email or WhatsApp.');
+        show('error', 'Something went wrong and your enquiry was not saved. Please try again, or contact us directly by email or WhatsApp.');
       } catch {
         show('error', 'We could not reach our server. Check your connection and try again, or contact us directly by email or WhatsApp.');
       } finally {
+        inFlight = false;
         busy(false);
       }
     });

@@ -14,7 +14,9 @@ export const company = {
   phone: '+923475503548',
   phoneDisplay: '+92 347 5503548',
   phoneHref: 'tel:+923475503548',
-  whatsappHref: 'https://wa.me/923475503548',
+  whatsappNumber: '923475503548',
+  /** Opens the company's WhatsApp chat with a short prefilled greeting. */
+  whatsappHref: `https://wa.me/923475503548?text=${encodeURIComponent("Hello AT NEXORA Technologies, I'd like to discuss a project.")}`,
   /** Verified social profiles only. Leave empty until real profiles exist. */
   socials: [] as { label: string; href: string }[],
 } as const;

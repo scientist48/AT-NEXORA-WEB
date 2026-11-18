@@ -17,7 +17,7 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'always',
   build: { format: 'directory', inlineStylesheets: 'auto' },
-  integrations: [react(), sitemap({ filter: (page) => !page.includes('/404') })],
+  integrations: [react(), sitemap({ filter: (page) => !page.includes('/404') && !page.includes('/admin/') })],
   vite: {
     plugins: [tailwindcss()],
     build: { chunkSizeWarningLimit: 1200 },

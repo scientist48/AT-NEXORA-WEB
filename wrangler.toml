@@ -1,10 +1,18 @@
-# Cloudflare Pages configuration
+# Cloudflare Pages configuration.
+# `name` must match the Cloudflare Pages project name (used by `wrangler pages deploy`).
 name = "at-nexora-technologies"
 compatibility_date = "2026-01-01"
 pages_build_output_dir = "./dist"
 
-# Optional: bind a KV namespace to make contact-form rate limiting durable
-# across isolates. Without it, a best-effort in-memory limiter is used.
-# [[kv_namespaces]]
-# binding = "RATE_LIMIT_KV"
-# id = "<your-kv-namespace-id>"
+# Existing D1 database for project enquiries and admin sessions.
+# Do NOT create another database. Applies to production and preview deployments.
+[[d1_databases]]
+binding = "DB"
+database_name = "at-nexora-inquiries"
+database_id = "9bb98501-4482-4301-be19-511de4e6085a"
+migrations_dir = "migrations"
+
+# Secrets (never commit values; see README → "Admin setup"):
+#   ADMIN_USERNAME, ADMIN_PASSWORD_HASH
+# Optional plain variable:
+#   CONTACT_ALLOWED_ORIGINS

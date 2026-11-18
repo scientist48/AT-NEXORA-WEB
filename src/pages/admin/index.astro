@@ -1,0 +1,11 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import AdminApp from '../../components/admin/AdminApp.tsx';
+import { inquiryServices } from '../../content/site';
+---
+<AdminLayout title="Inquiries">
+  <AdminApp client:only="react" services={[...inquiryServices]} />
+  <noscript>
+    <p class="shell py-16 text-ink">The dashboard needs JavaScript enabled.</p>
+  </noscript>
+</AdminLayout>
